@@ -1,0 +1,6 @@
+[submodule "roles/base/files/polyglot"]
+	path = roles/base/files/polyglot
+	url = https://github.com/agkozak/polyglot
+[submodule "roles/qbit.rubywarden"]
+	path = roles/qbit.rubywarden
+	url = https://github.com/qbit/openbsd-rubywarden
