@@ -1,9 +1,10 @@
 - name: homeserver setup
-  hosts: serverNOOB
+  hosts: homeserver
   vars_files:
     - vars.yml
   roles:
     - { role: base,         tags: ["base"]         }
+    - { role: wireguard,    tags: ["wireguard"]    }
     - { role: user,         tags: ["user"]         }
     - { role: php,          tags: ["php"]          }
     - { role: postgresql,   tags: ["postgresql"]   }
