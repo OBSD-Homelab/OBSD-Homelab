@@ -1,0 +1,17 @@
+- name: homeserver setup
+  hosts: serverNOOB
+  vars_files:
+    - vars.yml
+  roles:
+    - { role: base,         tags: ["base"]         }
+    - { role: user,         tags: ["user"]         }
+    - { role: php,          tags: ["php"]          }
+    - { role: postgresql,   tags: ["postgresql"]   }
+    - { role: acme,         tags: ["acme"]         }
+    - { role: gitea,        tags: ["gitea"]        }
+    - { role: jailkit,      tags: ["jailkit"]      }
+    - { role: turn,         tags: ["turn"]         }
+    - { role: synapse,      tags: ["synapse"]      }
+    - { role: nextcloud,    tags: ["nextcloud"]    }
+    - { role: znc,          tags: ["znc"]          }
+
