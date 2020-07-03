@@ -1,0 +1,82 @@
+# to get the contents of a table
+#    : pfctl -t tablename -T show
+#
+
+
+# read the file /etc/services to get an idea of predefined port names
+inbound_tcp = "{ http, https, xmpp-client, xmpp-server, {{ prosody_proxy_port }}, {{ znc_port }}, {{ ssh_port }}, {{ synapse_turn_port }}, {{ synapse_federation_port }} }"
+inbound_udp = "{ {{ synapse_turn_port }} }"
+# these are all the ports where people can try to do bruteforce password attacks
+# as they are password login protected
+# We will enable bruteforce blockers for these
+password_tcp = "{ {{ ssh_port }} }"
+
+# we will also need to open the additional ports defined by the user
+{% if additional_tcp_ports is defined %}
+additional_tcp_ports = "{ {{ additional_tcp_ports | join(', ') }} }"
+{% endif %}
+
+{% if additional_udp_ports is defined %}
+additional_udp_ports = "{ {{ additional_udp_ports | join(', ') }} }"
+{% endif %}
+
+# stop bruteforce attackers that try to hug of death
+table <bruteforce> persist
+
+# options for pf performance
+set loginterface egress
+set optimization normal
+set block-policy drop
+set syncookies adaptive (start 25%, end 12%)
+
+# better not mess with the loopback interface
+set skip on lo
+
+# Sanitizing packet content
+# no-df + random-id = unique IP identifiers
+# max-mss must match net.inet.tcp.mssdflt in /etc/sysctl.conf
+anchor "scrub" in {
+	match in all scrub (no-df random-id)
+}
+
+# Block spoofed traffic
+antispoof log quick for { (egress) lo0 }
+
+# this enables blocking all packets without logging them
+# because we don't really care about random ports
+block all
+
+pass proto icmp
+pass proto icmp6
+
+{% if private_interfaces is defined %}
+{% for ifs in private_interfaces %}
+pass in on {{ ifs }}
+{% endfor %}
+{% endif %}
+
+block quick from <bruteforce>
+
+# we do a nice bruteforce block on every password protected port
+# by allowing only 100 connections from every ip
+# and also making sure that no more than 100 connections are established in
+# 10 seconds, if you violate the constraints you get put into timeout
+# <bruteforce> for two days
+pass in on egress proto tcp from any to any port $password_tcp \
+	flags S/SA keep state \
+	(max-src-conn 100, max-src-conn-rate 100/10, \
+	overload <bruteforce> flush global)
+
+pass in on egress proto tcp to port $inbound_tcp
+pass in on egress proto udp to port $inbound_udp
+
+{% if additional_tcp_ports is defined %}
+pass in on egress proto tcp to port $additional_tcp_ports
+{% endif %}
+
+{% if additional_udp_ports is defined %}
+pass in on egress proto udp to port $additional_udp_ports
+{% endif %}
+
+pass out
+

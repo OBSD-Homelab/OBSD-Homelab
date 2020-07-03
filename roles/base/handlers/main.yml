@@ -1,0 +1,16 @@
+- name: restart sshd
+  service:
+    name: sshd
+    state: restarted
+
+- name: reload pf
+  command: pfctl -f /etc/pf.conf
+
+- name: reload syslog
+  service:
+    name: syslogd
+    state: reloaded
+
+- name: newsyslog
+  command: newsyslog
+

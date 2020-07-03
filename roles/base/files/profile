@@ -1,0 +1,23 @@
+: ${HOME='/root'}
+export HOME
+PATH=$HOME/.local/bin:$HOME/.local/sbin:$HOME/bin:/sbin:/usr/sbin:/bin:/usr/bin:/usr/X11R6/bin:/usr/local/sbin:/usr/local/bin:/usr/games
+export PATH HOME
+ENV=$HOME/.kshrc
+export ENV
+LC_CTYPE=UTF-8
+export LC_CTYPE
+
+umask 022
+
+case "$-" in
+*i*)    # interactive shell
+	if [ -x /usr/bin/tset ]; then
+		if [ X"$XTERM_VERSION" = X"" ]; then
+			eval `/usr/bin/tset -sQ '-munknown:?vt220' $TERM`
+		else
+			eval `/usr/bin/tset -IsQ '-munknown:?vt220' $TERM`
+		fi
+	fi
+	;;
+esac
+

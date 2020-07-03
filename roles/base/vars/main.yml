@@ -1,0 +1,10 @@
+---
+syslog_log_files:
+  - postgresql
+  - prosody
+  - spamd
+  - httpd
+  - php-fpm
+  - relayd
+  - turnserver
+
