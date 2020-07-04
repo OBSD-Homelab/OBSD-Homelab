@@ -19,6 +19,9 @@ additional_tcp_ports = "{ {{ additional_tcp_ports | join(', ') }} }"
 additional_udp_ports = "{ {{ additional_udp_ports | join(', ') }} }"
 {% endif %}
 
+relayd_interface={{ relayd_interface }}
+relayd_port={{ relayd_port }}
+
 # stop bruteforce attackers that try to hug of death
 table <bruteforce> persist
 
@@ -78,6 +81,8 @@ pass in on egress proto tcp to port $additional_tcp_ports
 {% if additional_udp_ports is defined %}
 pass in on egress proto udp to port $additional_udp_ports
 {% endif %}
+
+pass in on egress proto tcp to port https divert-to $relayd_interface port $relayd_port
 
 pass out
 

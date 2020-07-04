@@ -1,0 +1,36 @@
+- name: enable httpd
+  service:
+    name: "{{ item }}"
+    enabled: yes
+  with_items:
+    - relayd
+    - httpd
+
+- name: copy httpd template
+  template:
+    src: httpd.conf.j2
+    dest: /etc/httpd.conf
+    owner: root
+    group: wheel
+    mode: 0644
+  notify: restart httpd
+
+- name: copy acme-client template
+  template:
+    src: acme-client.conf.j2
+    dest: /etc/acme-client.conf
+    owner: root
+    group: wheel
+    mode: 0644
+  notify: 
+  - generate acme certs
+  - ocspcheck
+
+- name: copy relayd template
+  template:
+    src: relayd.conf.j2
+    dest: /etc/relayd.conf
+    owner: root
+    group: wheel
+    mode: 0644
+  notify: restart relayd 

@@ -1,0 +1,75 @@
+
+relayd_interface="{{ relayd_interface }}"
+relayd_port="{{ relayd_port }}"
+https_port="{{ https_port }}"
+
+# table definitions
+table <local> { 127.0.0.1 }
+{% for site in websites %}
+{% if not site.httpd is defined %}
+table <{{ site.id }}> { 127.0.0.1 }
+{{ site.id }}_port="{{ site.port }}"
+{% endif %}
+{% endfor %}
+
+http protocol tlsinspect {
+	block
+{% for site in websites %}
+{% if site.httpd is defined %}
+	pass request header "Host" value "{{ site.name }}" forward to <local>
+{% else %}
+	pass request header "Host" value "{{ site.name }}" forward to <{{ site.id }}>
+{% endif %}
+{% endfor %}
+
+	### TCP performance options 
+	tcp { nodelay, sack, socket buffer 65536, backlog 100 }
+
+	### Return HTTP/HTML error pages
+	return error
+
+	### Security options
+	tls keypair "{{ domain }}"
+	tls { cipher-server-preference, no tlsv1.0, ciphers "HIGH" }
+
+	# credit: https://doc.huc.fr.eu.org/en/web/httpd/relayd-headers-httpd/
+	match request header set "X-Forwarded-By"   value "$SERVER_ADDR:$SERVER_PORT"    
+	match request header set "X-Forwarded-For"  value "$REMOTE_ADDR"
+
+	match request header remove "Proxy"
+
+	match response header set "Cache-Control"           value "max-age=1814400"
+	match response header set "Content-Security-Policy" value "default-src 'self'"
+	match response header set "Frame-Options"           value "SAMEORIGIN"
+	match response header set "Referrer-Policy"         value "strict-origin"
+  
+	match response header set "X-Content-Type-Options" value "nosniff"
+	match response header set "X-Download-Options"     value "noopen"
+	match response header set "X-Frame-Options"        value "SAMEORIGIN"
+	match response header set "X-Powered-By"           value "!"
+	match response header set "X-Robots-Tag"           value "index, nofollow"
+	match response header set "X-Xss-Protection"       value "1; mode=block"
+
+  match response header set "Strict-Transport-Security" value "max-age=1209600; preload"
+}
+
+relay tlsinspect {
+	listen on $relayd_interface port $relayd_port tls
+
+	protocol tlsinspect
+
+	forward to <local> port $https_port
+{% for site in websites %}
+{% if not site.httpd is defined %}
+	forward to <{{ site.id }}> port ${{ site.id }}_port
+{% endif %}
+{% endfor %}
+}
+
+{% if znc_site is defined %}
+include "/etc/relayd-znc.conf"
+{% endif %}
+
+{% if synapse_site is defined %}
+include "/etc/relayd-synapse.conf"
+{% endif %}

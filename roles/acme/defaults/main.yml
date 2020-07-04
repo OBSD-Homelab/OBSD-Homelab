@@ -1,0 +1,7 @@
+---
+http_interface: egress
+https_interface: 127.0.0.1
+http_port: 80
+https_port: 1729
+relayd_interface: 127.0.0.1
+relayd_port: 6969
