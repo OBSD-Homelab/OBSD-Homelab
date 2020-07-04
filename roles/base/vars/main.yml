@@ -7,4 +7,8 @@ syslog_log_files:
   - php-fpm
   - relayd
   - turnserver
+  - nsd
+  - doas
+  - clamd
+  - freshclam
 
