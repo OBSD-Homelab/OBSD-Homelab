@@ -2,7 +2,6 @@
 #    : pfctl -t tablename -T show
 #
 
-
 # read the file /etc/services to get an idea of predefined port names
 inbound_tcp = "{ http, https, xmpp-client, xmpp-server, {{ prosody_proxy_port }}, {{ znc_port }}, {{ ssh_port }}, {{ synapse_turn_port }}, {{ synapse_federation_port }} }"
 inbound_udp = "{ {{ synapse_turn_port }} }"
@@ -31,6 +30,8 @@ set syncookies adaptive (start 25%, end 12%)
 
 # better not mess with the loopback interface
 set skip on lo
+
+anchor "relayd/*"
 
 # Sanitizing packet content
 # no-df + random-id = unique IP identifiers
