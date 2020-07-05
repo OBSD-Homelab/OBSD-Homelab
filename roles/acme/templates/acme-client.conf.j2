@@ -9,7 +9,7 @@ authority letsencrypt-staging {
 }
 
 domain {{ domain }} {
-	alternative names { {%- for site in websites %} {{ site.name }} {%- endfor -%} }
+	alternative names { {%- for site in websites %} {{ site.name }} {% if site.aliases is defined %}{% for al in site.aliases %} {{ al }} {%- endfor %}{% endif %}{%- endfor -%} }
 	domain key "/etc/ssl/private/{{ domain }}.key"
 	domain full chain certificate "/etc/ssl/{{ domain }}.crt"
 	sign with letsencrypt

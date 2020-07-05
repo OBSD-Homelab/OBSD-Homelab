@@ -2,6 +2,9 @@ alias p='ps -l'
 alias j=jobs
 alias o='fg %-'
 
+alias vim="nvim"
+alias dvim="doas nvim"
+
 alias df='df -kh'
 alias du='du -kh'
 

@@ -3,8 +3,24 @@
 #
 
 # read the file /etc/services to get an idea of predefined port names
-inbound_tcp = "{ http, https, xmpp-client, xmpp-server, {{ prosody_proxy_port }}, {{ znc_port }}, {{ ssh_port }}, {{ synapse_turn_port }}, {{ synapse_federation_port }} }"
-inbound_udp = "{ {{ synapse_turn_port }} }"
+inbound_tcp = "{ http, https, xmpp-client, xmpp-server, {{ ssh_port }},\
+{% if enable_prosody %}
+		{{ prosody_proxy_port }},\
+{% endif %}
+{% if enable_znc %}
+		{{ znc_port }},\
+{% endif %}
+{% if enable_synapse %}
+		{{ synapse_turn_port }}, {{ synapse_federation_port }}\
+{% endif %}
+}"
+
+inbound_udp = "{ \
+{% if enable_synapse %}
+		{{ synapse_turn_port }}\
+{% endif %}
+}"
+
 # these are all the ports where people can try to do bruteforce password attacks
 # as they are password login protected
 # We will enable bruteforce blockers for these

@@ -1,0 +1,5 @@
+
+enable_prosody: false
+enable_znc: false
+enable_synapse: false
+

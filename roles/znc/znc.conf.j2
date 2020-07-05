@@ -1,0 +1,73 @@
+AnonIPLimit = 10
+AuthOnlyViaModule = true
+ConnectDelay = 5
+HideVersion = true
+LoadModule = webadmin
+LoadModule = block_motd
+LoadModule = chansaver
+MaxBufferSize = 500
+ProtectWebSessions = true
+SSLCertFile = /var/znc/znc.pem
+ServerThrottle = 30
+Skin = _default_
+StatusPrefix = *
+
+<Listener listener0>
+	AllowIRC = true
+	AllowWeb = false
+	Host = ::
+	IPv4 = false
+	IPv6 = true
+	Port = {{ znc_irc_port }}
+	SSL = true
+	URIPrefix = /
+</Listener>
+
+<Listener listener1>
+	AllowIRC = true
+	AllowWeb = false
+	Host = 0.0.0.0
+	IPv4 = true
+	IPv6 = false
+	Port = {{ znc_irc_port }}
+	SSL = true
+	URIPrefix = /
+</Listener>
+
+<Listener listener2>
+	AllowIRC = false
+	AllowWeb = true
+	Host = 127.0.0.1
+	IPv4 = true
+	IPv6 = false
+	Port = {{ znc_web_port }}
+	SSL = false
+	URIPrefix = /
+</Listener>
+
+<User {{ znc_user }}>
+	Admin = true
+  AuthOnlyViaModule = true
+	Allow = *
+	AltNick = {{ znc_user }}_
+	AppendTimestamp = false
+	AutoClearChanBuffer = true
+	AutoClearQueryBuffer = true
+	Buffer = 50
+	DenyLoadMod = false
+	DenySetBindHost = false
+	Ident = {{ znc_user }}
+	JoinTries = 10
+	LoadModule = chansaver
+	LoadModule = contro lpanel
+	MaxJoins = 0
+	MaxNetworks = 5
+	MaxQueryBuffers = 50
+	MultiClients = true
+	Nick = {{ znc_user }}
+	PrependTimestamp = true
+	QuitMsg = %znc%
+	RealName = {{ znc_user }}
+	TimestampFormat = [%H:%M:%S]
+</User>
+

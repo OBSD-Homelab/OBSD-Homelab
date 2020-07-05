@@ -8,6 +8,11 @@ https_port="{{ https_port }}"
 server "default" {
 {% for site in websites %}
 	alias "{{ site.name }}"
+{% if site.aliases is defined %}
+{% for al in site.aliases %}
+	alias "{{ al }}"
+{% endfor %}
+{% endif %}
 {% endfor %}
 
 	listen on $http_interface port $http_port
@@ -45,7 +50,11 @@ server "{{ site.name }}" {
 
 	log { access "access.log", error "error.log" }
 
+{% if site.folder is defined %}
+	root "{{ site.folder }}"
+{% else %}
 	root "htdocs/{{ site.name }}"
+{% endif %}
 
 	directory index index.html
 }
