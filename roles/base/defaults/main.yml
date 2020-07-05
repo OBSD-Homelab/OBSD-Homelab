@@ -7,7 +7,6 @@
 
 prosody_proxy_port: 5000
 ssh_port: 22
-znc_port: 4269
 synapse_federation_port: 8448
 synapse_client_port: 8008
 synapse_turn_port: 3478

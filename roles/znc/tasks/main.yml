@@ -1,0 +1,51 @@
+- name: install znc
+  openbsd_pkg:
+    name: znc
+    state: latest
+
+- name: add znc daemon group
+  group:
+    name: '{{ znc_daemon_user }}'
+
+- name: add znc daemon user
+  user:
+    name: '{{ znc_daemon_user }}'
+    comment: ZNC daemon user
+    group: '{{ znc_daemon_user }}'
+    home: /var/znc
+    shell: /sbin/nologin
+    createhome: no
+
+- name: create znc directory
+  file:
+    path: '{{ item }}'
+    owner: '{{ znc_daemon_user }}'
+    group: '{{ znc_daemon_user }}'
+    mode: 0700
+    state: directory
+  with_items:
+    - /var/znc
+    - /var/znc/configs
+
+- name: generate configuration
+  template:
+    src: znc.conf.j2
+    dest: /var/znc/configs/znc.conf
+    owner: '{{ znc_daemon_user }}'
+    group: '{{ znc_daemon_user }}'
+    mode: 0600
+    force: no
+  notify: restart znc
+
+- name: copy rc script
+  template:
+    src: znc.rc.j2
+    dest: /etc/rc.d/znc
+    mode: 0555
+
+- name: enable and start daemon
+  service:
+    name: znc
+    enabled: yes
+    state: started
+

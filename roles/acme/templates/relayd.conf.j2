@@ -15,10 +15,21 @@ table <{{ site.id }}> { 127.0.0.1 }
 http protocol tlsinspect {
 	block
 {% for site in websites %}
+	pass request header "Host" value "{{ site.name }}" forward to \
 {% if site.httpd is defined %}
-	pass request header "Host" value "{{ site.name }}" forward to <local>
+		<local>
 {% else %}
-	pass request header "Host" value "{{ site.name }}" forward to <{{ site.id }}>
+		<{{ site.id }}>
+{% endif %}
+{% if site.aliases is defined %}
+{% for al in site.aliases %}
+	pass request header "Host" value "{{ al }}" forward to \
+{% if site.httpd is defined %}
+		<local>
+{% else %}
+		<{{ site.id }}>
+{% endif %}
+{% endfor %}
 {% endif %}
 {% endfor %}
 

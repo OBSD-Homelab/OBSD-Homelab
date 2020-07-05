@@ -1,0 +1,7 @@
+---
+znc_irc_port: 3369
+znc_web_port: 3368
+znc_relayd_port: 3367
+znc_user: "{{ admin_user }}"
+znc_daemon_user: _znc
+

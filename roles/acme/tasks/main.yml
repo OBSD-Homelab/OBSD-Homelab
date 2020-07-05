@@ -34,3 +34,14 @@
     group: wheel
     mode: 0644
   notify: restart relayd 
+
+- name: copy relayd znc template
+  template:
+    src: relayd-znc.conf.j2
+    dest: /etc/relayd-znc.conf
+    owner: root
+    group: wheel
+    mode: 0644
+  notify: restart relayd
+  when: enable_znc
+
