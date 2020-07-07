@@ -100,4 +100,6 @@
     - { src: polyglot/polyglot.sh, dest: /etc/profile.d/polyglot.sh }
     - { src: profile.d/aliases.sh, dest: /etc/profile.d/aliases.sh }
     - { src: profile.d/functions.sh, dest: /etc/profile.d/functions.sh }
+    - { src: tmux.conf/.tmux.conf, dest: /etc/tmux.conf }
+    - { src: tmux.conf/.tmux.conf.local, dest: /etc/tmux.conf.local }
 
