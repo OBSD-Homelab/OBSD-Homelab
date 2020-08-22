@@ -4,6 +4,3 @@
 [submodule "roles/qbit.rubywarden"]
 	path = roles/qbit.rubywarden
 	url = https://github.com/qbit/openbsd-rubywarden
-[submodule "roles/base/files/tmux.conf"]
-	path = roles/base/files/tmux.conf
-	url = https://github.com/gpakosz/.tmux
