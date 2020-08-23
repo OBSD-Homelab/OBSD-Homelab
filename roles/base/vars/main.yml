@@ -1,14 +1,3 @@
 ---
-syslog_log_files:
-  - postgresql
-  - prosody
-  - spamd
-  - httpd
-  - php-fpm
-  - relayd
-  - turnserver
-  - nsd
-  - doas
-  - clamd
-  - freshclam
 
+base_ksh_profiled_files: "{{ base_ksh_profiled_files_standard + (base_ksh_profiled_files_extra | default([])) }}"

@@ -1,0 +1,22 @@
+---
+
+- name: create ssh-access group
+  group:
+    name: ssh-access
+
+- name: add users to ssh-access group
+  user:
+    name: '{{ item }}'
+    groups: ssh-access
+    append: yes
+  with_items: '{{ [ admin_user ] + base_ssh_users }}'
+
+- name: generate sshd_config
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: wheel
+    mode: 0644
+  notify: restart sshd
+

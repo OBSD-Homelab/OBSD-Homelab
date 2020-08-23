@@ -1,0 +1,29 @@
+---
+
+- name: copy shell files
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+    owner: root
+    group: wheel
+  with_items:
+    - { src: ksh.kshrc, dest: /etc/ksh.kshrc }
+    - { src: profile, dest: /etc/profile }
+
+- name: create profile.d directory
+  file:
+    path: /etc/profile.d
+    state: directory
+    mode: 0755
+    owner: root
+    group: wheel
+
+- name: copy profile.d files
+  copy:
+    src: "{{ item }}"
+    dest: /etc/profile.d/
+    mode: 0644
+    owner: root
+    group: wheel
+  with_items: '{{ base_ksh_profiled_files }}'
