@@ -1,3 +1,0 @@
----
-
-base_ksh_profiled_files: "{{ base_ksh_profiled_files_standard + (base_ksh_profiled_files_extra | default([])) }}"
