@@ -82,11 +82,9 @@ Subsystem	sftp	/usr/libexec/sftp-server
 #	PermitTTY no
 #	ForceCommand cvs server
 
-AllowGroups ssh-access _gitea
+AllowGroups ssh-access
 
-Match Group _gitea
+Match Group ssh-access
   AllowTcpForwarding no
-  X11Forwarding no
   AllowAgentForwarding no
-  PermitTTY no
 
