@@ -1,7 +1,7 @@
 : ${HOME='/root'}
 export HOME
 PATH=$HOME/.local/bin:$HOME/.local/sbin:$HOME/bin:/sbin:/usr/sbin:/bin:/usr/bin:/usr/X11R6/bin:/usr/local/sbin:/usr/local/bin:/usr/games
-export PATH HOME
+export PATH
 ENV=$HOME/.kshrc
 export ENV
 LC_CTYPE=UTF-8
