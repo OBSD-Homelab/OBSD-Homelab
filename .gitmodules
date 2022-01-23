@@ -1,6 +1,0 @@
-[submodule "roles/qbit.rubywarden"]
-	path = roles/qbit.rubywarden
-	url = https://github.com/qbit/openbsd-rubywarden
-[submodule "roles/base"]
-	path = roles/base
-	url = https://github.com/bsd-ac/openbsd-base.git
