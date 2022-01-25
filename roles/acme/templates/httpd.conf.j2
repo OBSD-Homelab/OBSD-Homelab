@@ -70,9 +70,7 @@ include "/etc/httpd-nextcloud.conf"
 include "/etc/httpd-roundcube.conf"
 {% endif %}
 
-{% if httpd_extra is defined %}
-include "/etc/homeserver/httpd-extra.conf"
-{% endif %}
+include "/etc/homeserver/httpd-extras.conf"
 
 # IP defender (!) must be last server
 server "nonexistent" {

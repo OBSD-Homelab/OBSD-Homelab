@@ -1,47 +1,27 @@
-- name: enable httpd
-  service:
-    name: "{{ item }}"
-    enabled: yes
-  with_items:
-    - relayd
-    - httpd
-
-- name: copy httpd template
-  template:
-    src: httpd.conf.j2
-    dest: /etc/httpd.conf
-    owner: root
-    group: wheel
-    mode: 0644
-  notify: restart httpd
-
-- name: copy acme-client template
+---
+- name: create acme-client.conf
   template:
     src: acme-client.conf.j2
     dest: /etc/acme-client.conf
     owner: root
     group: wheel
     mode: 0644
-  notify: 
-  - generate acme certs
-  - ocspcheck
 
-- name: copy relayd template
-  template:
-    src: relayd.conf.j2
-    dest: /etc/relayd.conf
+- name: generate acme certificates
+  command: acme-client -vv "{{ domain }}"
+  register: acme_client
+  changed_when: acme_client.rc == 0
+  failed_when: acme_client.rc != 0 and acme_client.rc != 2
+  notify: restart nginx
+
+- name: symlink site config
+  file:
+    src: "../sites-available/{{ domain }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ domain }}.conf"
     owner: root
     group: wheel
-    mode: 0644
-  notify: restart relayd 
+    state: link
+  notify: restart nginx
 
-- name: copy relayd znc template
-  template:
-    src: relayd-znc.conf.j2
-    dest: /etc/relayd-znc.conf
-    owner: root
-    group: wheel
-    mode: 0644
-  notify: restart relayd
-  when: enable_znc
-
+- name: flush_handlers
+  meta: flush_handlers

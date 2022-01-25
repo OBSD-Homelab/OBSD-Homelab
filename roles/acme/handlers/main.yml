@@ -1,15 +1,5 @@
-- name: restart httpd
+---
+- name: restart nginx
   service:
-    name: httpd
-    state: restarted
-
-- name: generate acme certs
-  command: acme-client {{ domain }}
-
-- name: ocspcheck
-  command: ocspcheck -N -o /etc/ssl/{{ domain }}.ocsp /etc/ssl/{{ domain }}.crt
-
-- name: restart relayd
-  service:
-    name: relayd
+    name: nginx
     state: restarted
