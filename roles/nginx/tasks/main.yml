@@ -1,0 +1,77 @@
+---
+- name: install nginx package
+  package:
+    name: nginx
+    state: present
+
+- name: create nginx directories
+  file:
+    path: "/etc/nginx/{{ item }}"
+    state: directory
+    owner: root
+    group: wheel
+    mode: '0755'
+  with_items: ["configs", "apps-available", "apps-enabled", "sites-available", "sites-enabled"]
+
+- name: copy nginx config
+  copy:
+    src: nginx.conf
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: wheel
+    mode: '0644'
+  notify: restart nginx
+
+- name: copy nginx sub-configs
+  copy:
+    src: configs/
+    dest: /etc/nginx/configs/
+    owner: root
+    group: wheel
+    mode: '0644'
+  notify: restart nginx
+
+- name: create app configs
+  template:
+    src: "{{ item }}"
+    dest: "/etc/nginx/apps-available/{{ item | basename | regex_replace('\\.j2$', '') }}"
+    owner: root
+    group: wheel
+    mode: '0644'
+  notify: restart nginx
+  with_items: "{{ lookup('fileglob', '../templates/apps-available/*.conf.j2') }}"
+
+- name: create site config
+  template:
+    src: site.conf.j2
+    dest: "/etc/nginx/sites-available/{{ domain }}.conf"
+    owner: root
+    group: wheel
+    mode: '0644'
+
+- name: create default site directory
+  file:
+    path: "/var/www/htdocs/{{ domain }}"
+    owner: root
+    group: wheel
+    mode: '0755'
+    state: directory
+
+- name: create default site index.html
+  file:
+    path: "/var/www/htdocs/{{ domain }}/index.html"
+    owner: root
+    group: wheel
+    mode: '0644'
+    state: touch
+    modification_time: preserve
+    access_time: preserve
+
+- name: start and enable nginx
+  service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: flush_handlers
+  meta: flush_handlers
