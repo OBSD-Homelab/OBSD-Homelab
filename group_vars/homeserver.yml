@@ -1,5 +1,2 @@
-
-enable_prosody: false
-enable_znc: false
-enable_synapse: false
-
+---
+max_attachment_size: 64
