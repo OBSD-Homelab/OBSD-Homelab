@@ -1,0 +1,7 @@
+openldap_ldifs: '{{ openldap_base_ldifs + openldap_extra_ldifs }}'
+
+openldap_schemas: '{{ openldap_base_schemas + openldap_extra_schemas }}'
+
+openldap_frontend_overlays: '{{ openldap_frontend_base_overlays + openldap_frontend_extra_overlays }}'
+
+openldap_data_overlays: '{{ openldap_data_base_overlays + openldap_data_extra_overlays }}'

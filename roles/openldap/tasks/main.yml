@@ -1,0 +1,102 @@
+---
+- name: install openldap packages
+  package:
+    name: '{{ openldap_packages }}'
+    state: present
+
+- name: install schema2ldif scripts
+  copy:
+    src: 'schema2ldif/bin/{{ item }}'
+    dest: '/usr/local/bin/{{ item }}'
+    owner: root
+    group: bin
+    mode: '0755'
+  with_items:
+    - ldap-schema-manager
+    - schema2ldif
+
+- name: install schema2ldif man pages
+  copy:
+    src: 'schema2ldif/man/{{ item }}'
+    dest: '/usr/local/man/man1/{{ item }}'
+    owner: root
+    group: bin
+    mode: '0644'
+  with_items:
+    - ldap-schema-manager.1
+    - schema2ldif.1
+  notify: update man database
+
+- name: enable openldap service
+  service:
+    name: slapd
+    enabled: true
+    args: -u {{ openldap_user }} -g {{ openldap_group }} -F /etc/slapd.d -h \'{{ openldap_listeners | join(" ") }}\'
+
+- name: make openldap directories
+  file:
+    path: '{{ item }}'
+    owner: '{{ openldap_user }}'
+    group: '{{ openldap_group }}'
+    mode: '0700'
+    state: directory
+  with_items: '{{ openldap_directories }}'
+
+- name: find openldap ldifs
+  find:
+    path: /usr/local/share/examples/openldap/schema
+    pattern: '*.ldif'
+    depth: 1
+  register: _openldap_ldifs
+
+- name: copy openldap ldifs
+  copy:
+    src: '{{ item.path }}'
+    dest: /etc/openldap/schema2ldif/
+    remote_src: true
+    owner: '{{ openldap_user }}'
+    group: '{{ openldap_group }}'
+    mode: '0644'
+  with_items: '{{ _openldap_ldifs.files }}'
+
+- name: copy custom openldap ldifs
+  copy:
+    src: '{{ item | basename }}'
+    dest: '/etc/openldap/schema2ldif/{{ item | basename }}'
+    owner: '{{ openldap_user }}'
+    group: '{{ openldap_group }}'
+    mode: '0644'
+  with_fileglob: '*.ldif'
+  notify:
+    - stop slapd server
+    - remove current slapd.d config
+
+- name: copy openldap schemas
+  copy:
+    src: '{{ item }}'
+    dest: /etc/openldap/schema/
+    owner: root
+    group: wheel
+    mode: '0644'
+  with_items: '{{ openldap_schemas }}'
+  notify: create schema ldifs
+
+- name: create openldap config
+  template:
+    src: slapd.ldiff.j2
+    dest: /etc/slapd.ldif
+    owner: '{{ openldap_user }}'
+    group: '{{ openldap_group }}'
+    mode: '0600'
+  notify:
+    - stop slapd server
+    - remove current slapd.d config
+
+- name: check openldap admin password
+  command: ldapsearch -D 'cn=admin,cn=config' -w '{{ openldap_admin_password }}' -H 'ldapi://%2ftmp%2fslapd.sock' -b 'cn=config'
+  register: _openldap_password_check
+  failed_when: false
+  changed_when: _openldap_password_check.rc != 0
+  notify:
+    - stop slapd server
+    - update openldap admin password

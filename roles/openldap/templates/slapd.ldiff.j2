@@ -1,0 +1,77 @@
+dn: cn=config
+objectClass: olcGlobal
+cn: config
+olcArgsFile: /var/openldap/run/slapd.args
+olcPidFile: /var/openldap/run/slapd.pid
+olcPasswordHash: {CRYPT}
+olcLocalSSF: 128
+{% if openldap_enforce_tls %}
+olcSecurity: tls=1
+{% endif %}
+{% if openldap_tls %}
+olcTLSCACertificateFile: {{ openldap_ca_cert }}
+olcTLSCertificateFile: {{ openldap_cert }}
+olcTLSCertificateKeyFile: {{ openldap_key }}
+{% endif %}
+
+
+dn: cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: schema
+
+
+{% for ldif in openldap_ldifs %}
+include: file:///etc/openldap/schema2ldif/{{ ldif }}
+{% endfor %}
+{% for schema in openldap_schemas %}
+{% if schema != 'nis.schema' and schema != 'rfc2307bis.schema' %}
+include: file:///etc/openldap/schema2ldif/{{ schema | regex_replace('\\.schema$', '.ldif') }}
+{% endif %}
+{% endfor %}
+
+
+dn: olcDatabase={-1}frontend,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcFrontendConfig
+olcDatabase: {-1}frontend
+olcAccess: {0}to * by dn.exact=gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth manage by * break
+
+{% for overlay in openldap_frontend_overlays %}
+
+{% include overlay %}
+
+{% endfor %}
+
+dn: olcDatabase={0}config,cn=config
+objectClass: olcDatabaseConfig
+olcDatabase: {0}config
+olcAccess: {0}to * by dn.exact=gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth manage by * break
+olcRootDN: cn=admin,cn=config
+olcRootPW: {CRYPT}$2b$10$0dewK19X0hbhTTyT7b5wR.X/yo3aASYm1WWn7CwrprgRM79KPCs8u
+
+
+dn: olcDatabase={1}mdb,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcMdbConfig
+olcDatabase: {1}mdb
+olcDbDirectory: /var/openldap/data
+olcSuffix: {{ openldap_base }}
+olcAccess: {0}to * by dn.exact=gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth manage by * break
+olcAccess: {1}to attrs=userPassword by self =xw by anonymous auth by * none
+olcRootDN: cn=admin,{{ openldap_base }}
+olcRootPW: {CRYPT}$2b$10$0dewK19X0hbhTTyT7b5wR.X/yo3aASYm1WWn7CwrprgRM79KPCs8u
+olcDbIndex: uid eq
+olcDbIndex: mail eq
+olcDbIndex: memberOf eq
+olcDbIndex: entryCSN eq
+olcDbIndex: entryUUID eq
+olcDbIndex: objectClass eq
+olcDbIndex: associatedDomain pres,eq,sub
+olcDbIndex: aAAARecord pres,eq
+olcDbIndex: aRecord pres,eq
+
+{% for overlay in openldap_data_overlays %}
+
+{% include overlay %}
+
+{% endfor %}

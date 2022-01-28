@@ -1,0 +1,81 @@
+#
+# source - https://github.com/PowerDNS/pdns/blob/master/modules/ldapbackend/pdns-domaininfo.schema
+
+
+# LDAP schema for PowerDNS specific information
+#
+# This schema does not define a way to store DNS
+# data but only metadata relevant only to the
+# PowerDNS implementation of a LDAP backend.
+# See dnsdomain2.schema for a schema that contains
+# everything needed to store the zones and RRs.
+#
+# 1.3.6.1.4.1.27080
+#   Sequanux - Gregory Oestreicher <greg@kamago.net>
+#
+# 1.3.6.1.4.1.27080.2
+#   PowerDNS LDAP schema
+#
+# 1.3.6.1.4.1.27080.2.1
+#   PowerDNS LDAP schema attributes
+#
+# 1.3.6.1.4.1.27080.2.2
+#   PowerDNS LDAP schema object classes
+
+attributetype ( 1.3.6.1.4.1.27080.2.1.1 NAME 'PdnsDomainId'
+    DESC 'Domain identifier in the LDAP backend - mapped to DomainInfo::id'
+    EQUALITY numericStringMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.36 SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.27080.2.1.2 NAME 'PdnsDomainNotifiedSerial'
+    DESC 'Last serial number of this zone that slaves have seen - mapped to DomainInfo::notified_serial'
+    EQUALITY numericStringMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.36 SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.27080.2.1.3 NAME 'PdnsDomainLastCheck'
+    DESC 'Last time this zone was checked over at the master for changes - mapped to DomainInfo::last_check'
+    EQUALITY numericStringMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.36 SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.27080.2.1.4 NAME 'PdnsDomainMaster'
+    DESC 'IP address of the master(s) of this domain, if any - mapped to DomainInfo::masters - Multivalued attribute'
+    EQUALITY caseIgnoreIA5Match
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+attributetype ( 1.3.6.1.4.1.27080.2.1.5 NAME 'PdnsDomainType'
+    DESC 'Type of zone, must be one of "master", "slave" or "native" - mapped to DomainInfo::kind'
+    EQUALITY caseIgnoreIA5Match
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.27080.1.11 NAME 'PdnsRecordTTL'
+    DESC 'TTL for a RR set. Syntax is RR type, a literal "|", TTL'
+    EQUALITY caseIgnoreMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+
+attributetype ( 1.3.6.1.4.1.27080.1.12 NAME 'PdnsRecordNoAuth'
+    DESC 'Whether or not this entry is authoritative for the RR given in this attribute. If this attribute is present then it is *NOT* for the RR in the attribute.'
+    EQUALITY caseIgnoreMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+
+attributetype ( 1.3.6.1.4.1.27080.1.13 NAME 'PdnsRecordOrdername'
+    DESC 'The ordername for the RR. Syntax is RR type, a literal "|", the ordername'
+    EQUALITY caseIgnoreMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+
+attributetype (  1.3.6.1.4.1.27080.1.15 NAME 'ALIASRecord'
+    DESC 'PowerDNS ALIAS RR type'
+    EQUALITY caseIgnoreIA5Match
+    SUBSTR caseIgnoreIA5SubstringsMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+objectclass ( 1.3.6.1.4.1.27080.2.2.1 NAME 'PdnsDomain'
+    DESC 'PDNS domain metadata information'
+    SUP top AUXILIARY
+    MUST ( PdnsDomainId )
+    MAY ( PdnsDomainNotifiedSerial $ PdnsDomainLastCheck $
+          PdnsDomainMaster $ PdnsDomainType ) )
+ 
+objectclass ( 1.3.6.1.4.1.27080.2.2.4 NAME 'PdnsRecordData'
+    DESC 'Additional record data for PDNS'
+    SUP top AUXILIARY
+    MAY ( PdnsRecordTTL $ PdnsRecordNoAuth $ PdnsRecordOrdername $ ALIASRecord ) )
