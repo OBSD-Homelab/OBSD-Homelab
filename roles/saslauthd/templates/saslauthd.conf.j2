@@ -1,0 +1,8 @@
+ldap_servers: '{{ sasl_ldap_servers | join(",") }}'
+ldap_search_base: {{ sasl_ldap_base }}
+ldap_filter: mail=%u
+ldap_auth_method: fastbind
+ldap_start_tls: no
+ldap_use_sasl: no
+ldap_version: 3
+ldap_scope: sub
