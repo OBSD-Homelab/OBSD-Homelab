@@ -13,6 +13,14 @@
     mode: '0755'
   with_items: ["configs", "apps-available", "apps-enabled", "sites-available", "sites-enabled"]
 
+- name: set up /var/www/tmp
+  file:
+    path: /var/www/tmp
+    state: directory
+    mode: '0777'
+    owner: www
+    group: www
+
 - name: copy nginx config
   copy:
     src: nginx.conf

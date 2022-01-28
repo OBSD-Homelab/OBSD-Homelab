@@ -4,14 +4,6 @@
     name: "{{ psql_packages }}"
     state: present
 
-- name: set up permissions on /var/www/tmp
-  file:
-    path: /var/www/tmp
-    state: directory
-    mode: 0777
-    owner: www
-    group: www
-
 - name: initialize postgresql
   command: initdb -D /var/postgresql/data -U postgres -E UTF8 -A peer
   args:
