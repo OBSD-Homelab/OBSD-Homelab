@@ -68,7 +68,6 @@
   service:
     name: postgresql
     enabled: true
-    state: started
 
 - name: flush_handlers
   meta: flush_handlers
