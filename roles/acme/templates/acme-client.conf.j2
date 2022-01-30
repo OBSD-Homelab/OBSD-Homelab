@@ -25,6 +25,8 @@ authority buypass-test {
 
 domain {{ domain }} {
 	domain key "/etc/ssl/private/{{ domain }}.key"
+	domain certificate "/etc/ssl/{{ domain }}.domain.crt"
+	domain chain certificate "/etc/ssl/{{ domain }}.chain.crt"
 	domain full chain certificate "/etc/ssl/{{ domain }}.crt"
 	sign with letsencrypt
 }

@@ -7,12 +7,35 @@
     group: wheel
     mode: 0644
 
+- name: create daily.local
+  file:
+    path: /etc/daily.local
+    state: touch
+    owner: root
+    group: wheel
+    mode: '0644'
+    modification_time: preserve
+    access_time: preserve
+
+- name: generate daily certificate updating script
+  template:
+    src: daily.local.certs.j2
+    dest: /etc/daily.local.certs
+    owner: root
+    group: wheel
+    mode: '0644'
+
+- name: ensure daily.local calls daily.cert
+  lineinfile:
+    path: /etc/daily.local
+    regex: '^\. /etc/daily.local.certs$'
+    line: '. /etc/daily.local.certs'
+
 - name: generate acme certificates
-  command: acme-client -vv "{{ domain }}"
+  command: /bin/sh /etc/daily.local.certs
   register: acme_client
-  changed_when: acme_client.rc == 0
-  failed_when: acme_client.rc != 0 and acme_client.rc != 2
-  notify: restart nginx
+  changed_when: "'UPDATED' in acme_client.stderr"
+  failed_when: "'ERROR' in acme_client.stderr"
 
 - name: symlink site config
   file:
