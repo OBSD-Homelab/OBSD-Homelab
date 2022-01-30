@@ -99,11 +99,3 @@
   notify:
     - stop slapd server
     - remove current slapd.d config
-
-- name: check openldap admin password
-  command: ldapsearch -D 'cn=admin,cn=config' -w '{{ openldap_admin_password }}' -H 'ldapi://%2ftmp%2fslapd.sock' -b 'cn=config'
-  register: _openldap_password_check
-  failed_when: false
-  changed_when: _openldap_password_check.rc != 0
-  notify:
-    - update openldap admin password

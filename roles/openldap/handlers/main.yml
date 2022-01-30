@@ -25,50 +25,13 @@
   become: true
   become_user: '{{ openldap_user }}'
   notify:
-    - update openldap admin password
-    - find post create scripts
-
-- name: update openldap admin password
-  command: /bin/echo
-  notify:
     - start slapd server
-    - get admin password hash
+    - find post create scripts
 
 - name: start slapd server
   service:
     name: slapd
     state: started
-
-- name: get admin password hash
-  shell: |
-    set -o pipefail
-    printf %s\\n "{{ openldap_admin_password }}" | encrypt
-  register: _openldap_admin_password_hash
-  notify:
-    - set admin password hash variable
-    - create admin password change ldif
-
-- name: set admin password hash variable
-  set_fact:
-    openldap_admin_password_hash: '{{ _openldap_admin_password_hash.stdout }}'
-
-- name: create admin password change ldif
-  template:
-    src: admin_password.ldif.j2
-    dest: /var/openldap/data/admin_password.ldif
-    owner: root
-    group: wheel
-    mode: '0600'
-  notify: change admin password
-
-- name: change admin password
-  command: ldapmodify -Y EXTERNAL -Q -H 'ldapi://%2ftmp%2fslapd.sock' -f /var/openldap/data/admin_password.ldif
-  notify: delete admin password change ldif
-
-- name: delete admin password change ldif
-  file:
-    state: absent
-    path: /var/openldap/data/admin_password.ldif
 
 - name: find post create scripts
   find:
