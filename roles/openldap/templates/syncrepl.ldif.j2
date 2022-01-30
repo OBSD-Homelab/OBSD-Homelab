@@ -1,0 +1,38 @@
+dn: cn=config
+changetype: modify
+replace: olcServerID
+{% for server in openldap_sync_servers %}
+olcServerID: {{ ansible_loop.index }} {{ server.uri }}
+{% endfor %}
+
+dn: olcOverlay=syncprov,olcDatabase={0}config,cn=config
+changetype: add
+objectClass: olcOverlayConfig
+objectClass: olcSyncProvConfig
+olcOverlay: syncprov
+
+dn: olcDatabase={0}config,cn=config
+changetype: modify
+replace: olcSyncRepl
+{% for server in openldap_syncrepl_servers %}
+olcSyncRepl: rid={{ ansible_loop.index }} provider={{ server.uri }} binddn="{{ server.binddn }}" bindmethod=simple credentials="{{ server.password }}" searchbase="cn=config" type=refreshAndPersist retry="5 5 300 5" timeout=1
+{% endfor %}
+-
+add: olcMirrorMode
+olcMirrorMode: TRUE
+
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+add: olcSyncRepl
+{% for server in openldap_syncrepl_servers %}
+olcSyncRepl: rid={{ ansible_loop.index }} provider={{ server.uri }} binddn="{{ server.binddn }}" bindmethod=simple credentials="{{ server.password }}" searchbase="{{ openldap_base }}" type=refreshOnly interval=00:00:00:10 retry="5 5 300 5" timeout=1
+{% endfor %}
+-
+add: olcMirrorMode
+olcMirrorMode: TRUE
+
+dn: olcOverlay=syncprov,olcDatabase={1}mdb,cn=config
+changetype: add
+objectClass: olcOverlayConfig
+objectClass: olcSyncProvConfig
+olcOverlay: syncprov

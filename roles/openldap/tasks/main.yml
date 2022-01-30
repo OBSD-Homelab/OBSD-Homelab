@@ -61,12 +61,12 @@
 
 - name: copy custom openldap ldifs
   copy:
-    src: '{{ item | basename }}'
+    src: '{{ item }}'
     dest: '/etc/openldap/schema2ldif/{{ item | basename }}'
     owner: '{{ openldap_user }}'
     group: '{{ openldap_group }}'
     mode: '0644'
-  with_fileglob: '*.ldif'
+  with_items: '{{ openldap_extra_ldifs }}'
   notify:
     - stop slapd server
     - remove current slapd.d config
@@ -98,5 +98,4 @@
   failed_when: false
   changed_when: _openldap_password_check.rc != 0
   notify:
-    - stop slapd server
     - update openldap admin password

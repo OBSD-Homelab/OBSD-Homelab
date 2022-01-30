@@ -24,6 +24,9 @@ openldap_base: 'dc=.'
 
 openldap_tls: false
 openldap_enforce_tls: false
+openldap_tls_cert: '/etc/ssl/{{ domain }}.crt'
+openldap_tls_ca_cert: '/etc/ssl/{{ domain }}.crt'
+openldap_tls_key: '/etc/ssl/private/{{ domain }}.key'
 
 openldap_base_ldifs:
   - core.ldif

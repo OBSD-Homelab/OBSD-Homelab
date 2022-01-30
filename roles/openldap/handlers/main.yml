@@ -3,7 +3,7 @@
   command: makewhatis
 
 - name: create schema ldifs
-  shell: schema2ldif "/etc/openldap/schema/{{ item }}" > /etc/openldap/schema2ldif/{{ item | regex_replace('\.schema$', '.ldif') }}
+  shell: schema2ldif "/etc/openldap/schema/{{ item | basename }}" > /etc/openldap/schema2ldif/{{ item | basename | regex_replace('\.schema$', '.ldif') }}
   with_items: '{{ openldap_schemas }}'
   become: true
   become_user: '{{ openldap_user }}'
@@ -24,7 +24,9 @@
   command: slapadd -n0 -F /etc/slapd.d -l /etc/slapd.ldif
   become: true
   become_user: '{{ openldap_user }}'
-  notify: update openldap admin password
+  notify:
+    - update openldap admin password
+    - find post create scripts
 
 - name: update openldap admin password
   command: /bin/echo
@@ -53,17 +55,29 @@
 - name: create admin password change ldif
   template:
     src: admin_password.ldif.j2
-    dest: /tmp/admin_password.ldif
+    dest: /var/openldap/data/admin_password.ldif
     owner: root
     group: wheel
     mode: '0600'
   notify: change admin password
 
 - name: change admin password
-  command: ldapmodify -Y EXTERNAL -Q -H 'ldapi://%2ftmp%2fslapd.sock' -f /tmp/admin_password.ldif
+  command: ldapmodify -Y EXTERNAL -Q -H 'ldapi://%2ftmp%2fslapd.sock' -f /var/openldap/data/admin_password.ldif
   notify: delete admin password change ldif
 
 - name: delete admin password change ldif
   file:
     state: absent
-    path: /tmp/admin_password.ldif
+    path: /var/openldap/data/admin_password.ldif
+
+- name: find post create scripts
+  find:
+    path: /etc/openldap/post_startup/
+    pattern: '*.ldif'
+  register: _openldap_post_scripts
+  changed_when: true
+  notify: execute post create scripts
+
+- name: execute post create scripts
+  command: ldapmodify -Y EXTERNAL -Q -H 'ldapi://%2ftmp%2fslapd.sock' -f '{{ item.path }}'
+  with_items: '{{ _openldap_post_scripts.files }}'
