@@ -1,5 +1,7 @@
 #!/bin/ksh
 
+set -e
+
 pname="$(basename "$0")"
 USAGE="$(cat <<EOF
 $pname : Change OpenLDAP admin password
