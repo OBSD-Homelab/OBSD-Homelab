@@ -27,6 +27,14 @@
     - schema2ldif.1
   notify: update man database
 
+- name: install oldap-passwd script
+  copy:
+    src: 'oldap-passwd'
+    dest: /usr/local/bin/
+    owner: root
+    group: wheel
+    mode: '0755'
+
 - name: enable openldap service
   service:
     name: slapd
