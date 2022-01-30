@@ -4,6 +4,7 @@ cn: config
 olcArgsFile: /var/openldap/run/slapd.args
 olcPidFile: /var/openldap/run/slapd.pid
 olcPasswordHash: {CRYPT}
+olcPasswordCryptSaltFormat: $2b${{ openldap_bcrypt_rounds|default(12) }}$%.22s
 olcLocalSSF: 128
 {% if openldap_server_id is defined %}
 olcServerID: {{ openldap_server_id }}
