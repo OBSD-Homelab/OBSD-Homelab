@@ -35,6 +35,13 @@
     group: wheel
     mode: '0755'
 
+- name: add openldap user to private key reading group
+  user:
+    name: '{{ openldap_user }}'
+    append: true
+    groups: _privkey_readers
+    create_home: false
+
 - name: enable openldap service
   service:
     name: slapd
