@@ -1,0 +1,3 @@
+---
+openldap_base: 'dc=.'
+sasl_ldap_base: 'dc=.'

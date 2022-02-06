@@ -1,19 +1,29 @@
-- name: homeserver setup
+---
+- name: OpenBSD homeserver setup
   hosts: homeserver
   vars_files:
+    - defaults.yml
     - vars.yml
+    - extrapolate.yml
+    - overrides.yml
   roles:
-    - { role: base,            tags: ["base"]         }
-    - { role: wireguard,       tags: ["wireguard"]    }
-    - { role: user,            tags: ["user"]         }
-    - { role: php,             tags: ["php"]          }
-    - { role: postgresql,      tags: ["postgresql"]   }
-    - { role: acme,            tags: ["acme"]         }
-    - { role: gitea,           tags: ["gitea"]        }
-    - { role: jailkit,         tags: ["jailkit"]      }
-    - { role: turn,            tags: ["turn"]         }
-    - { role: synapse,         tags: ["synapse"]      }
-    - { role: nextcloud,       tags: ["nextcloud"]    }
-    - { role: znc,             tags: ["znc"]          }
-    - { role: qbit.rubywarden, tags: ["rubywarden"]   }
-
+    - {role: nginx}
+    #- {role: acme}
+    - {role: openldap}
+    - {role: saslauthd}
+    - {role: postgresql}
+    - {role: php}
+    - {role: redis}
+    # - {role: nextcloud}
+    # - {role: clamav}
+    # - {role: davical}
+    # - {role: znc}
+    # - {role: redmine}
+    # - {role: calibre}
+    # - {role: calibre_web}
+    # - {role: gitea}
+    # - {role: vaultwarden}
+    # - {role: synapse}
+    # - {role: dendrite}
+    #- {role: pf}
+    #- {role: syslog}

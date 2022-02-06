@@ -1,0 +1,4 @@
+---
+openldap_base: 'dc={{ domain | split(".") | join(",dc=") }}'
+
+sasl_ldap_base: '{{ openldap_base }}'
