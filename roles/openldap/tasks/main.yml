@@ -106,3 +106,6 @@
   notify:
     - stop slapd server
     - remove current slapd.d config
+
+- name: flush_handlers
+  meta: flush_handlers
