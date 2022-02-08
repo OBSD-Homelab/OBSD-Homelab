@@ -10,3 +10,6 @@ php_extensions:
   - 'php-imap'
   - 'php-ldap'
   - 'php-zip'
+
+php_extra_packages:
+  - "pecl{{ php_version | replace('.', '') }}-redis"
