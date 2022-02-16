@@ -23,7 +23,10 @@
 - name: install calibre-web in virtualenv
   pip:
     virtualenv: /var/calibre/cw_virtualenv
-    name: calibreweb
+    name: 'calibreweb[ldap]'
+  environment:
+    CPPFLAGS: '-I/usr/local/include'
+    LDFLAGS: '-L/usr/local/lib'
   become: true
   become_user: _calibre
 
