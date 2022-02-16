@@ -1,0 +1,17 @@
+#!/bin/ksh
+#
+# {{ ansible_managed }}
+#
+
+daemon="/usr/local/libexec/calibre_web-launcher"
+daemon_user="_calibre"
+
+. /etc/rc.d/rc.subr
+
+pexp="/var/calibre/cw_virtualenv/bin/python[0-9].[0-9] /var/calibre/cw_virtualenv/bin/cps"
+
+rc_stop_signal=KILL
+rc_reload=NO
+rc_bg=YES
+
+rc_cmd $1

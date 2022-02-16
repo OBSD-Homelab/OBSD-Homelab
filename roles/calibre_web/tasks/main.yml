@@ -1,0 +1,49 @@
+---
+- name: install calibre-web packages
+  package:
+    name: '{{ calibre_web_packages }}'
+    state: present
+
+- name: create calibre-web group
+  group:
+    name: _calibre
+
+- name: create calibre-web user
+  user:
+    name: _calibre
+    group: _calibre
+    comment: Calibre Web user
+    groups: ''
+    home: /var/calibre
+    login_class: daemon
+    shell: /bin/ksh
+    password_lock: true
+    password: '*'
+
+- name: install calibre-web in virtualenv
+  pip:
+    virtualenv: /var/calibre/cw_virtualenv
+    name: calibreweb
+  become: true
+  become_user: _calibre
+
+- name: install calibre-web launcher
+  copy:
+    src: calibre_web-launcher
+    dest: /usr/local/libexec/calibre_web-launcher
+    owner: root
+    group: wheel
+    mode: '0755'
+
+- name: create calibre-web rc script
+  template:
+    src: calibre_web.j2
+    dest: /etc/rc.d/calibre_web
+    owner: root
+    group: wheel
+    mode: '0755'
+
+- name: enable calibre-web service
+  service:
+    name: calibre_web
+    enabled: true

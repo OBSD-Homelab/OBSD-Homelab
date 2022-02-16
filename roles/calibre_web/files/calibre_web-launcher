@@ -1,0 +1,6 @@
+#!/bin/ksh
+
+export HOME="/var/calibre"
+cd /var/calibre
+. ./cw_virtualenv/bin/activate
+exec cps
