@@ -7,3 +7,6 @@
 [submodule "roles/openldap"]
 	path = roles/openldap
 	url = https://github.com/Excision-Mail/ansible-openldap
+[submodule "roles/php"]
+	path = roles/php
+	url = https://github.com/Excision-Mail/ansible-php
