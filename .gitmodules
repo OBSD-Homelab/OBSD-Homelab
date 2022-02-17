@@ -13,3 +13,6 @@
 [submodule "roles/postgresql"]
 	path = roles/postgresql
 	url = https://github.com/Excision-Mail/ansible-postgresql
+[submodule "roles/nginx"]
+	path = roles/nginx
+	url = https://github.com/Excision-Mail/ansible-nginx

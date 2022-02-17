@@ -1,4 +1,0 @@
----
-nginx_packages:
-  - nginx
-  - cyrus-sasl--ldap
