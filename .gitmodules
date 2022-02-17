@@ -1,9 +1,9 @@
-[submodule "roles/openldap/files/schema2ldif"]
-	path = roles/openldap/files/schema2ldif
-	url = https://github.com/fusiondirectory/schema2ldif
 [submodule "roles/syslog"]
 	path = roles/syslog
 	url = https://github.com/Excision-Mail/ansible-syslog
 [submodule "roles/redis"]
 	path = roles/redis
 	url = https://github.com/Excision-Mail/ansible-redis
+[submodule "roles/openldap"]
+	path = roles/openldap
+	url = https://github.com/Excision-Mail/ansible-openldap
