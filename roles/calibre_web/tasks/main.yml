@@ -50,3 +50,4 @@
   service:
     name: calibre_web
     enabled: true
+    state: started
