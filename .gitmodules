@@ -19,3 +19,6 @@
 [submodule "roles/redmine"]
 	path = roles/redmine
 	url = https://github.com/bsd-ac/openbsd-redmine
+[submodule "roles/saslauth"]
+	path = roles/saslauth
+	url = https://github.com/Excision-Mail/ansible-saslauth

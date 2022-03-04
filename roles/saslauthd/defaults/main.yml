@@ -1,6 +1,0 @@
----
-saslauthd_packages:
-  - cyrus-sasl--ldap
-
-saslauthd_ldap_servers:
-  - 'ldapi://%2ftmp%2fslapd.sock'
