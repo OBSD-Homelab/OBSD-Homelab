@@ -1,0 +1,6 @@
+---
+lego_packages:
+  - lego
+lego_env:
+  PATH: /usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
+lego_args: ''
