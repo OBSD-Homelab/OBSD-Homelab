@@ -15,5 +15,5 @@ case "${lego_out}" in
     install -m 0644 -o _lego -g _lego /etc/lego/certificates/_.{{ domain }}.crt /etc/ssl/homelab.crt
     install -m 0640 -o _lego -g _lego /etc/lego/certificates/_.{{ domain }}.key /etc/ssl/homelab.key
     [ -f /usr/local/libexec/lego_hook ] && /usr/local/libexec/lego_hook
-     ;;
+    ;;
 esac
