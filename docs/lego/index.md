@@ -4,13 +4,14 @@ ACME client supporting Let's Encrypt and custom certificate authorities.
 
 ## Variables
 
-| variable        | default value                                                              | notes                                                                                   |
-| `lego_dns`      | ``                                                                         | (required) DNS provider to use for ACME DNS-01 challenge                                |
-| `lego_email`    | `{{ admin_email }}`                                                        | (required) email to use for registration, defaults to the specified homelab admin email |
-| `lego_domain`   | `{{ domain }}`                                                             | (required) domain to issue certificates for, defaults to the specified homelab domain   |
-| `lego_packages` | `['lego']`                                                                 | packages to install for this roles                                                      |
-| `lego_env`      | `{'PATH': '/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin'}` | environment variables to set when issuing/updating certificates                         |
-| `lego_args`     | ``                                                                         | extra arguments to pass to lego                                                         |
+| variable        | default value       | notes                                                                                   |
+|-----------------|---------------------|-----------------------------------------------------------------------------------------|
+| `lego_dns`      | ``                  | (required) DNS provider to use for ACME DNS-01 challenge                                |
+| `lego_env`      | ``                  | (required) environment variables to set when running lego                               |
+| `lego_email`    | `{{ admin_email }}` | (required) email to use for registration, defaults to the specified homelab admin email |
+| `lego_domain`   | `{{ domain }}`      | (required) domain to issue certificates for, defaults to the specified homelab domain   |
+| `lego_args`     | ``                  | extra arguments to pass to lego                                                         |
+| `lego_packages` | `['lego']`          | packages to install for this role                                                       |
 
 ## Notes
 
@@ -41,7 +42,8 @@ lego_args: '--dns.disable-cp'
 The default key/cert pair used by OBSD Homelab is
 
 | mode   | owner   | group   | path                   |
+|--------|---------|---------|------------------------|
 | `0640` | `_lego` | `_lego` | `/etc/ssl/homelab.key` |
 | `0644` | `_lego` | `_lego` | `etc/ssl/homelab.crt`  |
 
-If managing certificates manually, create a `_lego` user account prior to running the OBSD Homelab setup. After generating the certificates, copy them to the above location with the correct owner/group/permissions. The `_lego` group is used by services to access the protected private key.
+If managing certificates manually, create a `_lego` user account prior to running the OBSD Homelab setup. After generating the certificates, copy them to the above location with the correct owner/group/permissions, as the `_lego` group is used by services to access the protected private key.
