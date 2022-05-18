@@ -1,2 +1,11 @@
 ---
 domain: <CHANGE-ME>
+
+admin_mail: <CHANGE-ME>
+
+smtp_user: <CHANGE-ME>
+smtp_pass: <CHANGE-ME>
+smtp_host: <CHANGE-ME>
+smtp_port: <CHANGE-ME>
+smtp_from_name: <CHANGE-ME>  # 'Web Admin'
+smtp_from_mail: <CHANGE-ME>  # no-reply@bsd.ac
