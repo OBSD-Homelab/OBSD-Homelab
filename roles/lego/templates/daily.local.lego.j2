@@ -1,3 +1,5 @@
+printf %s\\n "Updating certificates..."
+
 lego_out=$(su _lego -c "env $(cat /etc/lego/homelab.env | xargs) \
     /usr/local/bin/lego --accept-tos \
     --dns {{ lego_dns }} \
@@ -8,6 +10,8 @@ lego_out=$(su _lego -c "env $(cat /etc/lego/homelab.env | xargs) \
     renew 2>&1
 ")
 
+printf %s\\n "${lego_out}"
+
 case "${lego_out}" in
 *"no renewal.")
     ;;
@@ -17,3 +21,5 @@ case "${lego_out}" in
     [ -f /usr/local/libexec/lego_hook ] && /usr/local/libexec/lego_hook
     ;;
 esac
+
+printf \\n\\n\\n
