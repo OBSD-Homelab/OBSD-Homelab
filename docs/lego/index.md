@@ -4,14 +4,14 @@ ACME client supporting Let's Encrypt and custom certificate authorities.
 
 ## Variables
 
-| variable        | default value       | notes                                                                                   |
-|-----------------|---------------------|-----------------------------------------------------------------------------------------|
-| `lego_dns`      | ``                  | (required) DNS provider to use for ACME DNS-01 challenge                                |
-| `lego_env`      | ``                  | (required) environment variables to set when running lego                               |
-| `lego_email`    | `{{ admin_email }}` | email to use for registration, defaults to the specified homelab admin email |
-| `lego_domain`   | `{{ domain }}`      | domain to issue certificates for, defaults to the specified homelab domain   |
-| `lego_args`     | ``                  | extra arguments to pass to lego                                                         |
-| `lego_packages` | `['lego']`          | packages to install for this role                                                       |
+| variable        | default value                            | notes                                                                        |
+|-----------------|------------------------------------------|------------------------------------------------------------------------------|
+| `lego_dns`      | ``                                       | (required) DNS provider to use for ACME DNS-01 challenge                     |
+| `lego_env`      | ``                                       | (required) environment variables to set when running lego                    |
+| `lego_email`    | {% raw %}`{{ admin_email }}`{% endraw %} | email to use for registration, defaults to the specified homelab admin email |
+| `lego_domain`   | {% raw %}`{{ domain }}`{% endraw %}      | domain to issue certificates for, defaults to the specified homelab domain   |
+| `lego_args`     | ``                                       | extra arguments to pass to lego                                              |
+| `lego_packages` | `['lego']`                               | packages to install for this role                                            |
 
 ## Notes
 
