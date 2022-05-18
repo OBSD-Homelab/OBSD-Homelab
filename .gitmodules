@@ -4,9 +4,6 @@
 [submodule "roles/redis"]
 	path = roles/redis
 	url = https://github.com/Excision-Mail/ansible-redis
-[submodule "roles/openldap"]
-	path = roles/openldap
-	url = https://github.com/Excision-Mail/ansible-openldap
 [submodule "roles/php"]
 	path = roles/php
 	url = https://github.com/Excision-Mail/ansible-php
@@ -22,3 +19,6 @@
 [submodule "roles/saslauth"]
 	path = roles/saslauth
 	url = https://github.com/Excision-Mail/ansible-saslauth
+[submodule "roles/mariadb"]
+	path = roles/mariadb
+	url = https://github.com/Excision-Mail/ansible-mariadb
