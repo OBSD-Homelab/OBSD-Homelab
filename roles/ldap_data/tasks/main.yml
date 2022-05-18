@@ -1,0 +1,38 @@
+---
+- name: add base domain
+  ldap_entry:
+    dn: '{{ openldap_base }}'
+    objectClass:
+      - dcObject
+      - organization
+    attributes:
+      o: OBSD HomeLab
+      dc: '{{ openldap_base_dc }}'
+
+- name: add organizational units
+  ldap_entry:
+    dn: 'ou={{ item }},{{ openldap_base }}'
+    objectClass:
+      - organizationalUnit
+    attributes:
+      ou: '{{ item }}'
+  with_items:
+    - 'Users'
+    - 'Groups'
+
+- name: get ldap reader password hash
+  shell: |
+    set -o pipefail
+    echo '{{ ldap_pass }}' | encrypt
+  register: _ldap_reader_hash
+  changed_when: false
+
+- name: add ldap reader account
+  ldap_entry:
+    dn: 'cn=ldap,ou=Users,{{ openldap_base }}'
+    objectClass:
+      -inetOrgPerson
+    attributes:
+      cn: ldap
+      sn: reader
+      userPassword: '{CRYPT}{{ _ldap_reader_hash.stdout }}'
