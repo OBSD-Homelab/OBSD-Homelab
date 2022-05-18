@@ -14,9 +14,9 @@ ACME client supporting Let's Encrypt and custom certificate authorities.
 
 ## Notes
 
-[Lego](https://go-acme.github.io/lego/) is the first part of the OBSD Homelab setup as it is going to create the TLS certificates for the homelab domain. The default lego setup uses the DNS-01 challlenge, which allows it to create wildcard certificates for the domain. Lego supports a multitude of DNS providers, listed on [their website](https://go-acme.github.io/lego/dns/).
+[Lego](https://go-acme.github.io/lego/) is the first part of the OBSD Homelab setup as it is going to create the TLS certificates for the homelab domain. The default lego setup uses the DNS-01 challlenge, which allows it to create wildcard certificates for the domain. Lego supports a multitude of DNS providers, listed on [its website](https://go-acme.github.io/lego/dns/).
 
-The first example setup provided on the lego DNS page, which uses Cloudflare, would set -
+The first example setup provided on the lego DNS page, which uses Cloudflare, would set the following OBSD Homelab variables in `vars.yml`-
 
 ```yml
 lego_dns: cloudflare
@@ -45,4 +45,4 @@ The default key/cert pair used by OBSD Homelab is
 | `0640` | `_lego` | `_lego` | `/etc/ssl/homelab.key` |
 | `0644` | `_lego` | `_lego` | `etc/ssl/homelab.crt`  |
 
-If managing certificates manually, create a `_lego` user account prior to running the OBSD Homelab setup. After generating the certificates, copy them to the above location with the correct permissions. This is important as the `_lego` group is used by services to access the protected private key.
+If managing certificates manually, create a `_lego` user account prior to running the OBSD Homelab setup. After generating the certificates, copy them to the above location with the correct owner/group/permissions. The `_lego` group is used by services to access the protected private key.
