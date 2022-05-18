@@ -1,6 +1,6 @@
-## OpenBSD Homeserver
+## OpenBSD Homelab
 
-Simple homeserver setup using OpenBSD and ansible.
+Simple homelab setup using OpenBSD and ansible.
 
 ### Available applications
 
