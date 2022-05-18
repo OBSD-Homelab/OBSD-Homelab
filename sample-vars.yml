@@ -1,11 +1,20 @@
 ---
 domain: <CHANGE-ME>
 
-admin_mail: <CHANGE-ME>
+## email for the default admin account created on services
+admin_mail: <CHANGE-ME> # john.doe@gmail.com
 
-smtp_user: <CHANGE-ME>
-smtp_pass: <CHANGE-ME>
-smtp_host: <CHANGE-ME>
-smtp_port: <CHANGE-ME>
-smtp_from_name: <CHANGE-ME>  # 'Web Admin'
-smtp_from_mail: <CHANGE-ME>  # no-reply@bsd.ac
+## most services want a way to send notifications via email
+smtp_user: <CHANGE-ME>  # jane.doe@gmail.com
+smtp_pass: <CHANGE-ME>  # <gmail password/token>
+smtp_host: <CHANGE-ME>  # smtp.gmail.com
+smtp_port: <CHANGE-ME>  # 465
+smtp_from_name: <CHANGE-ME>  # 'Jane Doe'
+smtp_from_mail: <CHANGE-ME>  # jane.doe+no-reply@gmail.com
+
+
+## read lego docs https://obsd-homelab.github.io/OBSD-Homelab/lego/
+lego_dns: <CHANGE-ME>
+lego_env:
+  <CHANGE-ME>:  <CHANGE-ME>
+  <CHANGE-ME>:  <CHANGE-ME>
