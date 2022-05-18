@@ -5,7 +5,7 @@ lego_out=$(su _lego -c "env $(cat /etc/lego/homelab.env | xargs) \
     --dns {{ lego_dns }} \
     --path /etc/lego \
     --email {{ lego_email }} \
-    --domains '*.{{ domain }}' \
+    --domains '*.{{ lego_domain }}' \
     {{ lego_args }} \
     renew 2>&1
 ")
@@ -16,8 +16,8 @@ case "${lego_out}" in
 *"no renewal.")
     ;;
 *)
-    install -m 0644 -o _lego -g _lego /etc/lego/certificates/_.{{ domain }}.crt /etc/ssl/homelab.crt
-    install -m 0640 -o _lego -g _lego /etc/lego/certificates/_.{{ domain }}.key /etc/ssl/homelab.key
+    install -m 0644 -o _lego -g _lego /etc/lego/certificates/_.{{ lego_domain }}.crt /etc/ssl/homelab.crt
+    install -m 0640 -o _lego -g _lego /etc/lego/certificates/_.{{ lego_domain }}.key /etc/ssl/homelab.key
     [ -f /usr/local/libexec/lego_hook ] && /usr/local/libexec/lego_hook
     ;;
 esac

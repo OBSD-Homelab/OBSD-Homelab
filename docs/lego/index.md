@@ -31,7 +31,6 @@ An example setup for OBSD Homelab, which wants to use a custom lego solver and d
 ```yml
 lego_dns: exec
 lego_env:
-  PATH: /usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
   EXEC_PATH: /usr/local/libexec/lego_custom
 lego_email: obsd-homelab@bsd.ac
 lego_args: '--dns.disable-cp'

@@ -1,0 +1,2 @@
+---
+lego_env_merged: '{{ lego_env_default | combine(lego_env) }}'
