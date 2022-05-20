@@ -1,0 +1,81 @@
+---
+- name: install openldap packages
+  package:
+    name: '{{ openldap_packages }}'
+    state: present
+
+- name: install oldap-passwd script
+  copy:
+    src: 'oldap-passwd'
+    dest: /usr/local/bin/
+    owner: root
+    group: wheel
+    mode: '0755'
+
+- name: enable openldap service
+  service:
+    name: slapd
+    enabled: true
+    args: -u {{ openldap_user }} -g {{ openldap_group }} -F /etc/slapd.d -h \'{{ openldap_listeners | join(" ") }}\'
+
+- name: make openldap directories
+  file:
+    path: '{{ item }}'
+    owner: '{{ openldap_user }}'
+    group: '{{ openldap_group }}'
+    mode: '0700'
+    state: directory
+  with_items: '{{ openldap_directories }}'
+
+- name: find openldap ldifs
+  find:
+    path: /usr/local/share/examples/openldap/schema
+    pattern: '*.ldif'
+    depth: 1
+  register: _openldap_ldifs
+
+- name: copy openldap ldifs
+  copy:
+    src: '{{ item.path }}'
+    dest: /etc/openldap/schema2ldif/
+    remote_src: true
+    owner: '{{ openldap_user }}'
+    group: '{{ openldap_group }}'
+    mode: '0644'
+  with_items: '{{ _openldap_ldifs.files }}'
+
+- name: copy custom openldap ldifs
+  copy:
+    src: '{{ item }}'
+    dest: '/etc/openldap/schema2ldif/{{ item | basename }}'
+    owner: '{{ openldap_user }}'
+    group: '{{ openldap_group }}'
+    mode: '0644'
+  with_items: '{{ openldap_ldifs_extra }}'
+  notify:
+    - stop slapd server
+    - remove current slapd.d config
+
+- name: copy openldap schemas
+  copy:
+    src: '{{ item }}'
+    dest: /etc/openldap/schema/
+    owner: root
+    group: wheel
+    mode: '0644'
+  with_items: '{{ openldap_schemas }}'
+  notify: create schema ldifs
+
+- name: create openldap config
+  template:
+    src: slapd.ldiff.j2
+    dest: /etc/slapd.ldif
+    owner: '{{ openldap_user }}'
+    group: '{{ openldap_group }}'
+    mode: '0600'
+  notify:
+    - stop slapd server
+    - remove current slapd.d config
+
+- name: flush_handlers
+  meta: flush_handlers

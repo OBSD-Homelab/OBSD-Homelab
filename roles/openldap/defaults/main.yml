@@ -1,0 +1,74 @@
+---
+openldap_packages:
+  - cyrus-sasl--ldap
+  - openldap-server--aci-gssapi
+  - schema2ldif
+  - py3-ldap
+
+openldap_user: '_openldap'
+openldap_group: '_openldap'
+
+openldap_listeners:
+  - 'ldaps://'
+  - 'ldap://'
+  - 'ldapi://'
+  - 'ldapi://%2ftmp%2fslapd.sock'
+  - 'ldapi://%2fvar%2fwww%2ftmp%2fslapd.sock'
+
+openldap_directories:
+  - /etc/slapd.d
+  - /etc/openldap/schema2ldif
+  - /var/openldap
+  - /var/openldap/data
+  - /var/openldap/run
+
+openldap_tls: false
+openldap_enforce_tls: false
+openldap_tls_cert: '/etc/ssl/ldap.crt'
+openldap_tls_ca_cert: '/etc/ssl/ldap.crt'
+openldap_tls_key: '/etc/ssl/private/ldap.key'
+
+openldap_modules_default:
+  - dynlist.la
+  - rwm.la
+  - unique.la
+
+openldap_modules_extra: []
+
+openldap_schemas_default: []
+
+openldap_schemas_extra: []
+
+openldap_ldifs_default:
+  - core.ldif
+  - cosine.ldif
+  - inetorgperson.ldif
+  - nis.ldif
+  - dyngroup.ldif
+
+openldap_ldifs_extra: []
+
+openldap_frontend_overlays_default:
+  - mail_bind.ldif.j2
+
+openldap_frontend_overlays_extra: []
+
+openldap_db_index_default:
+  - attr: mail
+    comp: 'eq,sub,pres'
+  - attr: 'member'
+    comp: 'eq,pres'
+  - attr: 'entryCSN'
+    comp: 'eq'
+  - attr: 'entryUUID'
+    comp: 'eq'
+  - attr: 'objectClass'
+    comp: 'eq'
+
+openldap_db_index_extra: []
+
+openldap_data_overlays_default:
+  - overlay_unique.ldif.j2
+  - overlay_dynlist.ldif.j2
+
+openldap_data_overlays_extra: []

@@ -1,0 +1,10 @@
+# allow binding by email
+dn: olcOverlay={0}rwm,olcDatabase={-1}frontend,cn=config
+objectClass: olcOverlayConfig
+objectClass: olcRwmConfig
+olcOverlay: {0}rwm
+olcRwmRewrite: {0}rwm-rewriteEngine on
+olcRwmRewrite: {1}rwm-rewriteMap slapd attr2dn "ldap:///{{ openldap_base }}?dn?sub"
+olcRwmRewrite: {2}rwm-rewriteContext bindDN
+olcRwmRewrite: {3}rwm-rewriteRule "^mail=(.+)@(.+)$" "${attr2dn($0)}" "@:I"
+olcRwmNormalizeMapped: FALSE

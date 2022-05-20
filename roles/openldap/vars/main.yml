@@ -1,0 +1,12 @@
+---
+openldap_modules: '{{ openldap_modules_default + openldap_modules_extra }}'
+
+openldap_ldifs: '{{ openldap_ldifs_default + openldap_ldifs_extra }}'
+
+openldap_schemas: '{{ openldap_schemas_default + openldap_schemas_extra }}'
+
+openldap_frontend_overlays: '{{ openldap_frontend_overlays_default + openldap_frontend_overlays_extra }}'
+
+openldap_db_index: '{{ openldap_db_index_default + openldap_db_index_extra }}'
+
+openldap_data_overlays: '{{ openldap_data_overlays_default + openldap_data_overlays_extra }}'

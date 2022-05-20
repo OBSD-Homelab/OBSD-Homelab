@@ -1,0 +1,23 @@
+name: ansible-lint
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  ansible-lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Lint Ansible Playbook
+      # replace "master" with any valid ref
+      uses: ansible/ansible-lint-action@master
+      with:
+        targets: ""
+        override-deps: |
+          ansible-lint>=5.3.2
+        args: "-x 301 -x 204"

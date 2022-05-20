@@ -1,0 +1,86 @@
+dn: cn=config
+objectClass: olcGlobal
+cn: config
+olcArgsFile: /var/openldap/run/slapd.args
+olcPidFile: /var/openldap/run/slapd.pid
+olcPasswordCryptSaltFormat: $2b${{ openldap_bcrypt_rounds|default(12) }}$%.22s
+olcAuthzRegexp: gidNumber=0\+uidNumber=0,cn=peercred,cn=external,cn=auth cn=admin,{{ openldap_base }}
+olcLocalSSF: 128
+{% if openldap_server_id is defined %}
+olcServerID: {{ openldap_server_id }}
+{% endif %}
+{% if openldap_enforce_tls %}
+olcSecurity: tls=1
+{% endif %}
+{% if openldap_tls %}
+olcTLSCACertificateFile: {{ openldap_tls_ca_cert }}
+olcTLSCertificateFile: {{ openldap_tls_cert }}
+olcTLSCertificateKeyFile: {{ openldap_tls_key }}
+{% endif %}
+
+
+dn: cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: schema
+
+{% for ldif in openldap_ldifs %}
+include: file:///etc/openldap/schema2ldif/{{ ldif | basename }}
+{% endfor %}
+{% for schema in openldap_schemas %}
+{% if schema != 'nis.schema' and schema != 'rfc2307bis.schema' %}
+include: file:///etc/openldap/schema2ldif/{{ schema | basename | regex_replace('\\.schema$', '.ldif') }}
+{% endif %}
+{% endfor %}
+
+
+dn: cn=module{0},cn=config
+objectClass: olcModuleList
+cn: module{0}
+{% for module in openldap_modules %}
+olcModuleLoad: {{ module }}
+{% endfor %}
+
+
+dn: olcDatabase={-1}frontend,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcFrontendConfig
+olcDatabase: {-1}frontend
+olcPasswordHash: {CRYPT}
+olcRootDN: cn=admin,{{ openldap_base }}
+olcAccess: to * by dn.exact=gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth manage
+
+{% for overlay in openldap_frontend_overlays %}
+
+{% include overlay %}
+
+{% endfor %}
+
+dn: olcDatabase={0}config,cn=config
+objectClass: olcDatabaseConfig
+olcDatabase: {0}config
+olcRootDN: cn=admin,{{ openldap_base }}
+olcAccess: to * by dn.exact=gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth manage
+
+dn: olcDatabase={1}mdb,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcMdbConfig
+olcDatabase: {1}mdb
+olcDbDirectory: /var/openldap/data
+olcSuffix: {{ openldap_base }}
+olcRootDN: cn=admin,{{ openldap_base }}
+{% if openldap_password_hash is defined %}
+olcRootPW: {{ openldap_password_hash }}
+{% endif %}
+olcAccess: to attrs=userPassword by anonymous auth by self =xw by users auth
+olcAccess: to attrs=cn,gn,sn,givenName,mail by anonymous auth by self write by users read
+olcAccess: to attrs=objectClass,entry by anonymous auth by users read
+olcAccess: to dn.subtree={{ openldap_base }} by users search
+{% for db_index in openldap_db_index %}
+olcDbIndex: {{ db_index.attr }} {{ db_index.comp }}
+{% endfor %}
+
+{% for overlay in openldap_data_overlays %}
+
+{% include overlay %}
+
+{% endfor %}
