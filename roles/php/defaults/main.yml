@@ -1,0 +1,19 @@
+---
+php_version: '8.0'
+
+php_extensions:
+  - 'php'
+  - 'php-gd'
+  - 'php-pgsql'
+  - 'php-curl'
+  - 'php-pdo_pgsql'
+  - 'php-pdo_mysql'
+  - 'php-pdo_sqlite'
+  - 'php-imap'
+  - 'php-ldap'
+  - 'php-zip'
+
+php_extra_packages:
+  - "pecl{{ php_version | replace('.', '') }}-redis"
+
+php_max_attachment_size: '{{ max_attachment_size | default(35) }}'

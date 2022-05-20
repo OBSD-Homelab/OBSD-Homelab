@@ -1,0 +1,4 @@
+---
+php_fpm: "php{{ php_version | replace('.', '') }}_fpm"
+
+php_packages: "{{ php_extensions | map('regex_replace', '^(.*)$', '\\1%' + php_version) | list + php_extra_packages }}"
