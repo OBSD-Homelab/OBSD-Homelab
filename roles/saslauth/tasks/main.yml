@@ -1,0 +1,28 @@
+---
+- name: install saslauthd packages
+  package:
+    name: '{{ sasl_packages }}'
+    state: present
+
+- name: enable saslauthd service
+  service:
+    name: saslauthd
+    enabled: true
+    args: '-a ldap'
+
+- name: generate saslauthd config
+  template:
+    src: saslauthd.conf.j2
+    dest: /etc/saslauthd.conf
+    owner: root
+    group: wheel
+    mode: '0640'
+  notify: restart saslauthd
+
+- name: start saslauthd service
+  service:
+    name: saslauthd
+    state: started
+
+- name: flush_handlers
+  meta: flush_handlers

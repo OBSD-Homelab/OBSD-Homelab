@@ -1,6 +1,3 @@
 [submodule "roles/syslog"]
 	path = roles/syslog
 	url = https://github.com/Excision-Mail/ansible-syslog
-[submodule "roles/saslauth"]
-	path = roles/saslauth
-	url = https://github.com/Excision-Mail/ansible-saslauth

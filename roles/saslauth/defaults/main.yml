@@ -1,0 +1,8 @@
+---
+sasl_packages:
+  - cyrus-sasl--ldap
+
+sasl_ldap_servers:
+  - 'ldapi://%2ftmp%2fslapd.sock'
+
+sasl_ldap_base: 'dc=.'
