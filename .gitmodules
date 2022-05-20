@@ -10,6 +10,3 @@
 [submodule "roles/saslauth"]
 	path = roles/saslauth
 	url = https://github.com/Excision-Mail/ansible-saslauth
-[submodule "roles/mariadb"]
-	path = roles/mariadb
-	url = https://github.com/Excision-Mail/ansible-mariadb

@@ -1,0 +1,8 @@
+---
+mdb_packages:
+  - mariadb-server
+  - py3-mysqlclient
+
+mdb_socket_dir: /var/www/tmp
+
+mdb_bind_addr: 'localhost'

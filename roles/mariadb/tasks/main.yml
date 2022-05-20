@@ -1,0 +1,40 @@
+---
+- name: install mariadb packages
+  package:
+    name: "{{ mdb_packages }}"
+    state: present
+
+- name: set up /var/www/tmp
+  file:
+    path: /var/www/tmp
+    state: directory
+    mode: '0777'
+    owner: www
+    group: www
+
+- name: enable mariadb service
+  service:
+    name: mysqld
+    enabled: true
+
+- name: initialize mysqld
+  command: /usr/local/bin/mariadb-install-db
+  args:
+    creates: /var/mysql/ib_buffer_pool
+
+- name: generate configuration
+  template:
+    src: my.cnf.j2
+    dest: /etc/my.cnf
+    owner: root
+    group: wheel
+    mode: '0644'
+  notify: restart mariadb
+
+- name: ensure mariadb is started
+  service:
+    name: mysqld
+    state: started
+
+- name: flush_handlers
+  meta: flush_handlers
