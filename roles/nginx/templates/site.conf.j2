@@ -1,0 +1,21 @@
+server {
+    listen		443 ssl;
+    listen		[::]:443 ssl;
+
+    ssl_certificate /etc/ssl/{{ domain }}.crt;
+    ssl_certificate_key /etc/ssl/private/{{ domain }}.key;
+    ssl_stapling on;
+    ssl_stapling_verify on;
+
+    server_name {{ domain }};
+
+    include configs/http_headers.conf;
+
+    # ACME challenge over HTTPS
+    location /.well-known/acme-challenge/ {
+        rewrite ^/.well-known/acme-challenge/(.*) /$1 break;
+        root /acme;
+    }
+
+    include apps-enabled/*.conf;
+}

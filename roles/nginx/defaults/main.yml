@@ -1,0 +1,13 @@
+---
+nginx_packages:
+  - nginx
+  - cyrus-sasl--ldap
+  - py3-ldap
+
+nginx_ldap_auth_version: "master"
+nginx_ldap_ip: '127.0.0.1'
+nginx_ldap_port: 8888
+nginx_ldap_uri: 'ldap://127.0.0.1'
+# nginx_ldap_basedn:
+# nginx_ldap_binddn:
+# nginx_ldap_bindpw:

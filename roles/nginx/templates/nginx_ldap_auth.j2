@@ -1,0 +1,15 @@
+#!/bin/ksh
+#
+# {{ ansible_managed }}
+
+daemon="/usr/local/libexec/nginx_ldap_auth-launcher"
+daemon_user="www"
+daemon_logger="daemon.info"
+
+. /etc/rc.d/rc.subr
+
+pexp="/usr/local/bin/python3 /usr/local/libexec/nginx-ldap-auth/nginx-ldap-auth-daemon.py"
+
+rc_bg=YES
+rc_reload=NO
+rc_cmd $1
