@@ -1,0 +1,20 @@
+---
+psql_packages:
+  - postgresql-server
+  - postgresql-client
+  - postgresql-contrib
+  - py3-psycopg2
+
+psql_addresses:
+  - localhost
+
+psql_socket_dirs:
+  - /tmp
+  - /var/www/var/run/postgresql
+
+psql_max_connections: 40
+
+psql_semmni: 90
+psql_semmns: 2048
+
+psql_timezone: "{{ timezone | default('UTC') }}"
