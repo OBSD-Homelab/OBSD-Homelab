@@ -3,6 +3,12 @@ mdb_packages:
   - mariadb-server
   - py3-mysqlclient
 
-mdb_socket_dir: /var/www/tmp
+mdb_socket_dir: /var/www/var/run/mysql
 
 mdb_bind_addr: 'localhost'
+
+mdb_directories:
+  - path: '{{ mdb_socket_dir }}'
+    user: _mysql
+    group: _mysql
+    mode: '0755'

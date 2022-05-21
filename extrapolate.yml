@@ -1,4 +1,32 @@
 ---
-openldap_base: 'dc={{ domain | split(".") | join(",dc=") }}'
+##### smtp
+smtp_from: '{{ smtp_from_name }} <{{ smtp_from_mail }}>'
 
+##### lego
+lego_domain: '{{ domain }}'
+
+##### openldap
+openldap_base: 'dc={{ domain | split(".") | join(",dc=") }}'
+openldap_base_dc: '{{ domain | split(".") | first }}'
+
+##### ldap data
+
+##### saslauth
 sasl_ldap_base: '{{ openldap_base }}'
+
+##### nginx
+nginx_ldap_basedn: '{{ openldap_base }}'
+nginx_ldap_binddn: 'cn=ldap,ou=Users,{{ openldap_base }}'
+nginx_ldap_filter: '(mail=%(username)s)'
+nginx_ldap_bindpw: '{{ ldap_pass }}'
+
+
+##### redis
+admin_dn: 'mail=admin@{{ domain }},ou=Users,{{ openldap_base }}'
+
+
+##### redmine
+rm_admin_mail: '{{ admin_mail }}'
+rm_ldap_base: '{{ openldap_base }}'
+rm_ldap_dn: '{{ ldap_user }}'
+rm_ldap_pass: '{{ ldap_pass }}'

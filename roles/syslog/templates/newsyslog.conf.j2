@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
-# logfile_name                owner:group         mode   count  size    when    flags
+# logfile_name                owner:group                        mode   count  size    when    flags
 {% for logfile in syslog_logfiles %}
-{{ '%-30s' | format(logfile.file) }}{% set owner='' %}{% if logfile.user is defined %}{% set owner = logfile.user %}{% endif %}{% if logfile.group is defined %}{% set owner = owner + ':' + logfile.group %}{% endif %}{{ '%-20s' | format(owner) }}{{ '%-7s' | format(logfile.mode | default('640')) }}{{ '%-7s' | format(logfile.count | default('5')) }}{{ '%-8s' | format(logfile.size | default ('300')) }}{{ '%-8s' | format(logfile.when | default('*')) }}{{ '%-4s' | format(logfile.flags | default('Z')) }}{% if logfile.command is defined %} "{{ logfile.command }}" {% endif %}
+{{ '%-30s' | format(logfile.file) }}{% set owner='' %}{% if logfile.user is defined %}{% set owner = logfile.user %}{% endif %}{% if logfile.group is defined %}{% set owner = owner + ':' + logfile.group %}{% endif %}{{ '%-35s' | format(owner) }}{{ '%-7s' | format(logfile.mode | default('640')) }}{{ '%-7s' | format(logfile.count | default('5')) }}{{ '%-8s' | format(logfile.size | default ('300')) }}{{ '%-8s' | format(logfile.when | default('*')) }}{{ '%-4s' | format(logfile.flags | default('Z')) }}{% if logfile.command is defined %} "{{ logfile.command }}" {% endif %}
 
 {% endfor %}

@@ -28,4 +28,6 @@
     owner: root
     group: wheel
     mode: '0644'
-  notify: restart newsyslog
+
+- name: flush_handlers
+  meta: flush_handlers

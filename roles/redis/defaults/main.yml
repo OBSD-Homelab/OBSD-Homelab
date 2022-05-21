@@ -13,5 +13,11 @@ redis_port: 6379
 
 redis_protected: "no"
 
-redis_socket_path: "/var/run/redis/redis.sock"
-redis_socket_perm: "770"
+redis_socket_path: "/var/www/var/run/redis/redis.sock"
+redis_socket_perm: "777"
+
+redis_directories:
+  - path: '/var/www/var/run/redis'
+    user: _redis
+    group: _redis
+    mode: '0755'

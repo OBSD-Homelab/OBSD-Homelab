@@ -4,10 +4,14 @@
     name: '{{ redis_packages }}'
     state: present
 
-- name: enable redis service
-  service:
-    name: redis
-    enabled: true
+- name: set up redis directories
+  file:
+    path: '{{ item.path }}'
+    state: directory
+    mode: '{{ item.mode }}'
+    owner: '{{ item.user }}'
+    group: '{{ item.group }}'
+  with_items: '{{ redis_directories }}'
 
 - name: generate redis config
   template:
@@ -17,3 +21,12 @@
     group: wheel
     mode: '0644'
   notify: restart redis
+
+- name: enable redis service
+  service:
+    name: redis
+    enabled: true
+    state: started
+
+- name: flush_handlers
+  meta: flush_handlers

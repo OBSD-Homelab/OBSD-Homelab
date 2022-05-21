@@ -4,18 +4,14 @@
     name: "{{ mdb_packages }}"
     state: present
 
-- name: set up /var/www/tmp
+- name: set up mysql directories
   file:
-    path: /var/www/tmp
+    path: '{{ item.path }}'
     state: directory
-    mode: '0777'
-    owner: www
-    group: www
-
-- name: enable mariadb service
-  service:
-    name: mysqld
-    enabled: true
+    mode: '{{ item.mode }}'
+    owner: '{{ item.user }}'
+    group: '{{ item.group }}'
+  with_items: '{{ mdb_directories }}'
 
 - name: initialize mysqld
   command: /usr/local/bin/mariadb-install-db
@@ -34,6 +30,7 @@
 - name: ensure mariadb is started
   service:
     name: mysqld
+    enabled: true
     state: started
 
 - name: flush_handlers

@@ -18,3 +18,9 @@ psql_semmni: 90
 psql_semmns: 2048
 
 psql_timezone: "{{ timezone | default('UTC') }}"
+
+psql_directories:
+  - path: '/var/www/var/run/postgresql'
+    user: _postgresql
+    group: _postgresql
+    mode: '0755'

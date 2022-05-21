@@ -4,13 +4,14 @@
     name: "{{ psql_packages }}"
     state: present
 
-- name: set up /var/www/var/run/postgresql
+- name: set up postgresql directories
   file:
-    path: /var/www/var/run/postgresql
+    path: '{{ item.path }}'
     state: directory
-    mode: '0755'
-    owner: _postgresql
-    group: www
+    mode: '{{ item.mode }}'
+    owner: '{{ item.user }}'
+    group: '{{ item.group }}'
+  with_items: '{{ psql_directories }}'
 
 - name: enable postgresql service
   service:
