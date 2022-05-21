@@ -3,27 +3,47 @@
   hosts: homeserver
   vars_files:
     - defaults.yml
+    - secrets.yml
     - vars.yml
     - extrapolate.yml
     - overrides.yml
+  pre_tasks:
+    - name: create homelab group
+      group:
+        name: _homelab
+    - name: create homelab user
+      user:
+        name: _homelab
+        group: _homelab
+        comment: OBSD HomeLab user
+        home: /nonexistent
+        create_home: false
+        password: '*************'
+        password_lock: true
+        shell: /bin/ksh
   roles:
-    - {role: nginx}
-    #- {role: acme}
+    - {role: lego}
+    - {role: syslog}
     - {role: openldap}
-    - {role: saslauthd}
-    - {role: postgresql}
-    - {role: php}
+    - {role: ldap_data}
+    - {role: saslauth}
+    - {role: nginx}
     - {role: redis}
+    - {role: php}
+    - {role: postgresql}
+    - {role: mariadb}
+    # - {role: monica}
+    # - {role: redmine}
+    # - {role: freshrss}
+    # - {role: calibre_web}
+    # - {role: phpldapadmin}
     # - {role: nextcloud}
-    # - {role: clamav}
     # - {role: davical}
     # - {role: znc}
-    # - {role: redmine}
+    # - {role: gitolite}
     # - {role: calibre}
-    # - {role: calibre_web}
     # - {role: gitea}
     # - {role: vaultwarden}
     # - {role: synapse}
     # - {role: dendrite}
-    #- {role: pf}
-    #- {role: syslog}
+    # - {role: pf}
