@@ -20,10 +20,14 @@ nginx_ldap_binddn: 'cn=ldap,ou=Users,{{ openldap_base }}'
 nginx_ldap_filter: '(mail=%(username)s)'
 nginx_ldap_bindpw: '{{ ldap_pass }}'
 
-
 ##### redis
 admin_dn: 'mail=admin@{{ domain }},ou=Users,{{ openldap_base }}'
 
+##### vaultwarden
+vw_ldap_base: '{{ openldap_base }}'
+vw_ldap_user: '{{ nginx_ldap_binddn }}'
+vw_ldap_pass: '{{ ldap_pass }}'
+vw_domain: '{{ vaultwarden }}.{{ domain }}'
 
 ##### redmine
 rm_admin_mail: '{{ admin_mail }}'

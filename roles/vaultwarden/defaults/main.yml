@@ -1,0 +1,22 @@
+---
+vw_packages:
+  - vaultwarden--postgresql
+  - vaultwarden_ldap
+
+vw_allow_signups: false
+
+# vw_ldap_base:
+# vw_ldap_user:
+# vw_ldap_pass:
+# vw_admin_token:
+vw_domain: '{{ domain }}'
+vw_smtp_host: '{{ smtp_host }}'
+vw_smtp_port: '{{ smtp_port }}'
+vw_smtp_from_mail: '{{ smtp_from_mail }}'
+vw_smtp_from_name: '{{ smtp_from_name }}'
+vw_smtp_user: '{{ smtp_user }}'
+vw_smtp_pass: '{{ smtp_pass }}'
+
+### mislabelled variable names by vaultwarden, can't do anything about it
+vw_smtp_ssl: '{{ smtp_starttls or smtp_tls | ternary("true", "false") }}'
+vw_smtp_ssl_explicit: '{{ smtp_tls | ternary("true", "false") }}'

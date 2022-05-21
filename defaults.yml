@@ -28,3 +28,7 @@ ldap_user: 'cn=ldap,ou=Users,dc=bsd,dc=ac'
 ##### saslauth
 sasl_ldap_servers:
   - 'ldapi://%2ftmp%2fslapd.sock'
+
+
+##### vaultwarden
+vaultwarden: 'vaultwarden'

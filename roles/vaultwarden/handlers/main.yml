@@ -1,0 +1,10 @@
+---
+- name: restart vaultwarden
+  service:
+    name: vaultwarden
+    state: restarted
+
+- name: restart vaultwarden_ldap
+  service:
+    name: vaultwarden_ldap
+    state: restarted

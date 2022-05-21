@@ -1,0 +1,45 @@
+---
+- name: install vaultwarden packages
+  package:
+    name: '{{ vw_packages }}'
+    state: present
+
+- name: create postgresql user
+  postgresql_user:
+    name: vaultwarden
+    password: '{{ vw_db_pass }}'
+
+- name: create postgresql database
+  postgresql_db:
+    name: vaultwardend
+    owner: vaultwarden
+    encoding: UTF-8
+    template: template0
+
+- name: generate vaultwarden config
+  template:
+    src: env.j2
+    dest: /var/vaultwarden/.env
+    owner: _vaultwarden
+    group: _vaultwarden
+    mode: '0640'
+  notify: restart vaultwarden
+
+- name: generate vaultwarden_ldap config
+  template:
+    src: config.toml.j2
+    dest: /etc/vaultwarden_ldap/config.toml
+    owner: _vaultwarden
+    group: _vaultwarden
+    mode: '0640'
+  notify: restart vaultwarden_ldap
+
+- name: enable vaultwarden services
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: true
+  with_items: ['vaultwarden', 'vaultwarden_ldap']
+
+- name: flush_handlers
+  meta: flush_handlers
