@@ -1,7 +1,7 @@
 ---
 - name: install php packages
   package:
-    name: "{{ php_packages }}"
+    name: '{{ php_packages }}'
     state: present
   notify: restart php-fpm
 
@@ -16,8 +16,8 @@
 
 - name: install extension ini files
   copy:
-    src: "/etc/php-{{ php_version }}.sample/"
-    dest: "/etc/php-{{ php_version }}/"
+    src: '/etc/php-{{ php_version }}.sample/'
+    dest: '/etc/php-{{ php_version }}/'
     remote_src: true
     owner: root
     group: wheel
@@ -61,8 +61,8 @@
 
 - name: copy resolv.conf into www chroot
   copy:
-    src: "/etc/resolv.conf"
-    dest: "/var/www/etc/resolv.conf"
+    src: '/etc/resolv.conf'
+    dest: '/var/www/etc/resolv.conf'
     remote_src: true
     mode: preserve
   notify: restart php-fpm
@@ -73,8 +73,8 @@
 
 - name: copy resolv.conf.tail into www chroot if exists
   copy:
-    src: "/etc/resolv.conf.tail"
-    dest: "/var/www/etc/resolv.conf.tail"
+    src: '/etc/resolv.conf.tail'
+    dest: '/var/www/etc/resolv.conf.tail'
     remote_src: true
     mode: preserve
   when: resolv_conf_tail.stat.exists
@@ -82,6 +82,9 @@
 
 - name: enable php-fpm
   service:
-    name: "{{ php_fpm }}"
+    name: '{{ php_fpm }}'
     enabled: true
     state: started
+
+- name: flush_handlers
+  meta: flush_handlers
