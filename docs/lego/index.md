@@ -4,14 +4,14 @@ ACME client supporting Let's Encrypt and custom certificate authorities.
 
 ## Variables
 
-| variable        | default value                            | notes                                                                        |
-|-----------------|------------------------------------------|------------------------------------------------------------------------------|
-| `lego_dns`      | ``                                       | (required) DNS provider to use for ACME DNS-01 challenge                     |
-| `lego_env`      | ``                                       | (required) environment variables to set when running lego                    |
-| `lego_email`    | {% raw %}`{{ admin_email }}`{% endraw %} | email to use for registration, defaults to the specified homelab admin email |
-| `lego_domain`   | {% raw %}`{{ domain }}`{% endraw %}      | domain to issue certificates for, defaults to the specified homelab domain   |
-| `lego_args`     | ``                                       | extra arguments to pass to lego                                              |
-| `lego_packages` | `['lego']`                               | packages to install for this role                                            |
+| variable        | default value                           | notes                                                                        |
+|-----------------|-----------------------------------------|------------------------------------------------------------------------------|
+| `lego_dns`      | ``                                      | (required) DNS provider to use for ACME DNS-01 challenge                     |
+| `lego_env`      | ``                                      | (required) environment variables to set when running lego                    |
+| `lego_mail`     | {% raw %}`{{ admin_mail }}`{% endraw %} | email to use for registration, defaults to the specified homelab admin email |
+| `lego_domain`   | {% raw %}`{{ domain }}`{% endraw %}     | domain to issue certificates for, defaults to the specified homelab domain   |
+| `lego_args`     | ``                                      | extra arguments to pass to lego                                              |
+| `lego_packages` | `['lego']`                              | packages to install for this role                                            |
 
 ## Notes
 
@@ -24,7 +24,7 @@ lego_dns: cloudflare
 lego_env:
   CLOUDFLARE_EMAIL: foo@bar.com
   CLOUDFLARE_API_KEY: b9841238feb177a84330febba8a83208921177bffe733
-lego_email: me@bar.com
+lego_mail: me@bar.com
 ```
 
 An example setup for OBSD Homelab, which wants to use a custom lego solver and disable waiting for DNS propagation, would set the following lego variables -
@@ -33,7 +33,7 @@ An example setup for OBSD Homelab, which wants to use a custom lego solver and d
 lego_dns: exec
 lego_env:
   EXEC_PATH: /usr/local/libexec/lego_custom
-lego_email: obsd-homelab@bsd.ac
+lego_mail: obsd-homelab@bsd.ac
 lego_args: '--dns.disable-cp'
 ```
 

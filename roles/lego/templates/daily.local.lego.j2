@@ -4,7 +4,7 @@ lego_out=$(su _lego -c "env $(cat /etc/lego/homelab.env | xargs) \
     /usr/local/bin/lego --accept-tos \
     --dns {{ lego_dns }} \
     --path /etc/lego \
-    --email {{ lego_email }} \
+    --email {{ lego_mail }} \
     --domains '*.{{ lego_domain }}' \
     {{ lego_args }} \
     renew 2>&1

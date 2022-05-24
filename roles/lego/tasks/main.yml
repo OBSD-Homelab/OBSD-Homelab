@@ -13,6 +13,7 @@
     name: _lego
     group: _lego
     comment: lego user
+    home: /nonexistent
     create_home: false
     password: '*************'
 
@@ -37,7 +38,7 @@
     /usr/local/bin/lego --accept-tos
     --dns {{ lego_dns }}
     --path /etc/lego
-    --email {{ lego_email }}
+    --email {{ lego_mail }}
     --domains '*.{{ domain }}'
     {{ lego_args }}
     run
