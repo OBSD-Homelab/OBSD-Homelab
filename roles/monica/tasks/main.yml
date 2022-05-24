@@ -54,4 +54,5 @@
   cron:
     name: 'OBSD HomeLab monica import LDAP users'
     job: "-n cd /var/www/monica && /usr/local/bin/php-{{ monica_php_version }} artisan account:import_ldap --ldap_user '{{ monica_ldap_user }}' --ldap_pass '{{ monica_ldap_pass }}' --ldap_base '{{ monica_ldap_base }}' --ldap_filter '{{ monica_ldap_filter }}'"
+    minute: '*/10'
     user: www
