@@ -1,0 +1,23 @@
+---
+monica_packages:
+  - monica
+  - gpatch
+
+monica_dbs:
+  - monicad
+  - monica_testd
+
+monica_admin_mail: '{{ admin_mail }}'
+monica_admin_pass: '{{ admin_pass }}'
+
+monica_smtp_host: '{{ smtp_host }}'
+monica_smtp_port: '{{ smtp_port }}'
+monica_smtp_user: '{{ smtp_user }}'
+monica_smtp_pass: '{{ smtp_pass }}'
+monica_smtp_tls: '{{ smtp_tls }}'
+monica_smtp_starttls: '{{ smtp_starttls }}'
+monica_smtp_from_name: '{{ smtp_from_name }}'
+monica_smtp_from_mail: '{{ smtp_from_mail }}'
+
+# monica_domain: {{ monica }}.{{ domain }}
+# monica_php_version: {{ php_version }}

@@ -29,6 +29,13 @@ vw_ldap_user: '{{ nginx_ldap_binddn }}'
 vw_ldap_pass: '{{ ldap_pass }}'
 vw_domain: '{{ vaultwarden }}.{{ domain }}'
 
+##### monica
+monica_domain: '{{ monica }}.{{ domain }}'
+monica_ldap_user: '{{ nginx_ldap_binddn }}'
+monica_ldap_pass: '{{ ldap_pass }}'
+monica_ldap_base: '{{ openldap_base }}'
+monica_ldap_filter: '(&(objectClass=hlUser)(|(hlAppName=monica)(hlDefaultAllow=TRUE)))'
+
 ##### redmine
 rm_admin_mail: '{{ admin_mail }}'
 rm_ldap_base: '{{ openldap_base }}'

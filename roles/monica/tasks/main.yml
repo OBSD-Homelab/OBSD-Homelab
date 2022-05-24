@@ -1,0 +1,57 @@
+---
+- name: install monica packages
+  package:
+    name: '{{ monica_packages }}'
+    state: present
+
+- name: patch monica
+  patch:
+    src: monica-3.7.0-import-ldap-accounts.patch
+    basedir: /var/www/monica
+
+- name: create mysql database
+  mysql_db:
+    name: '{{ item }}'
+    state: present
+    encoding: 'utf8mb4'
+    login_unix_socket: /var/www/var/run/mysql/mysql.sock
+  with_items: '{{ monica_dbs }}'
+
+- name: create mysql user
+  mysql_user:
+    name: monica
+    password: "{{ monica_db_pass }}"
+    state: present
+    priv: 'monicad.*:ALL/monica_testd.*:ALL'
+    login_unix_socket: /var/www/var/run/mysql/mysql.sock
+
+- name: create monica config
+  template:
+    src: env.j2
+    dest: /var/www/monica/.env
+    owner: www
+    group: www
+    mode: '0640'
+
+- name: setup monica production (can take really long)
+  shell:
+    cmd: |
+      set -o pipefail
+      echo yes | php-{{ monica_php_version }} artisan setup:production --email='{{ monica_admin_mail }}' --password='{{ monica_admin_pass }}' --verbose
+    chdir: /var/www/monica
+  become: true
+  become_user: www
+  register: _monica_production
+  failed_when: _monica_production.rc != 0 and 'Welcome to Monica' not in _monica_production.stdout
+
+- name: setup monica scheduler cronjob
+  cron:
+    name: 'OBSD HomeLab monica'
+    job: '-n cd /var/www/monica && /usr/local/bin/php-{{ monica_php_version }} artisan schedule:run'
+    user: www
+
+- name: setup monica import ldap users cronjob
+  cron:
+    name: 'OBSD HomeLab monica import LDAP users'
+    job: "-n cd /var/www/monica && /usr/local/bin/php-{{ monica_php_version }} artisan account:import_ldap --ldap_user '{{ monica_ldap_user }}' --ldap_pass '{{ monica_ldap_pass }}' --ldap_base '{{ monica_ldap_base }}' --ldap_filter '{{ monica_ldap_filter }}'"
+    user: www

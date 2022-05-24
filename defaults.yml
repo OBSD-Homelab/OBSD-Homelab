@@ -29,6 +29,12 @@ ldap_user: 'cn=ldap,ou=Users,dc=bsd,dc=ac'
 sasl_ldap_servers:
   - 'ldapi://%2ftmp%2fslapd.sock'
 
+##### php
+php_version: '8.0'
 
 ##### vaultwarden
 vaultwarden: 'vaultwarden'
+
+##### monica
+monica: 'monica'
+monica_php_version: '{{ php_version }}'
