@@ -4,5 +4,5 @@ ldap_host = "http://127.0.01:389"
 ldap_bind_dn = "{{ vw_ldap_user }}"
 ldap_bind_password = "{{ vw_ldap_pass }}"
 ldap_search_base_dn = "{{ vw_ldap_base }}"
-ldap_search_filter = "(objectClass=hlUser)"
+ldap_search_filter = "{{ vw_ldap_filter }}"
 ldap_sync_interval_seconds = 600

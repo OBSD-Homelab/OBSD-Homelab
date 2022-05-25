@@ -31,8 +31,28 @@
   ldap_entry:
     dn: 'cn=ldap,ou=Users,{{ openldap_base }}'
     objectClass:
-      -inetOrgPerson
+      - inetOrgPerson
     attributes:
       cn: ldap
       sn: reader
       userPassword: '{CRYPT}{{ _ldap_reader_hash.stdout }}'
+
+- name: get admin password hash
+  shell: |
+    set -o pipefail
+    echo '{{ admin_pass }}' | encrypt
+  register: _ldap_admin_hash
+  changed_when: false
+
+- name: add admin account
+  ldap_entry:
+    dn: 'mail={{ admin_mail }},ou=Users,{{ openldap_base }}'
+    objectClass:
+      - inetOrgPerson
+      - hlUser
+    attributes:
+      mail: '{{ admin_mail }}'
+      cn: admin
+      sn: homelab
+      hlDefaultAllow: 'TRUE'
+      userPassword: '{CRYPT}{{ _ldap_admin_hash.stdout }}'

@@ -1,5 +1,5 @@
 ---
-calibre_web_packages:
+cw_packages:
   - libxslt
   - libxml
   - py3-virtualenv
