@@ -13,6 +13,15 @@
     group: wheel
   with_items: ["var", "var/run"]
 
+- name: create /var/www/var/www -> /var/www symlink
+  file:
+    state: link
+    src: '..'
+    path: '/var/www/var/www'
+    owner: root
+    group: wheel
+    mode: '0777'
+
 - name: create nginx directories
   file:
     path: "/etc/nginx/{{ item }}"
