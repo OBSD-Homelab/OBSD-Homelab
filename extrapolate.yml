@@ -10,34 +10,49 @@ openldap_base: 'dc={{ domain | split(".") | join(",dc=") }}'
 openldap_base_dc: '{{ domain | split(".") | first }}'
 
 ##### ldap data
+ldap_user: 'cn=ldap,ou=Users,{{ openldap_base }}'
+ldap_base: '{{ openldap_base }}'
 
 ##### saslauth
-sasl_ldap_base: '{{ openldap_base }}'
+sasl_ldap_base: '{{ ldap_base }}'
 
 ##### nginx
-nginx_ldap_basedn: '{{ openldap_base }}'
-nginx_ldap_binddn: 'cn=ldap,ou=Users,{{ openldap_base }}'
+nginx_ldap_basedn: '{{ ldap_base }}'
+nginx_ldap_binddn: '{{ ldap_user }}'
 nginx_ldap_filter: '(mail=%(username)s)'
 nginx_ldap_bindpw: '{{ ldap_pass }}'
 
 ##### redis
-admin_dn: 'mail=admin@{{ domain }},ou=Users,{{ openldap_base }}'
+admin_dn: 'mail=admin@{{ domain }},ou=Users,{{ ldap_base }}'
 
 ##### vaultwarden
-vw_ldap_base: '{{ openldap_base }}'
-vw_ldap_user: '{{ nginx_ldap_binddn }}'
-vw_ldap_pass: '{{ ldap_pass }}'
 vw_domain: '{{ vaultwarden }}.{{ domain }}'
+vw_ldap_base: '{{ ldap_base }}'
+vw_ldap_user: '{{ ldap_user }}'
+vw_ldap_pass: '{{ ldap_pass }}'
+vw_ldap_filter: '(objectClass=hlUser)'
 
 ##### monica
 monica_domain: '{{ monica }}.{{ domain }}'
-monica_ldap_user: '{{ nginx_ldap_binddn }}'
+monica_ldap_base: '{{ ldap_base }}'
+monica_ldap_user: '{{ ldap_user }}'
 monica_ldap_pass: '{{ ldap_pass }}'
-monica_ldap_base: '{{ openldap_base }}'
 monica_ldap_filter: '(&(objectClass=hlUser)(|(hlAppName=monica)(hlDefaultAllow=TRUE)))'
 
 ##### redmine
+rm_domain: '{{ redmine }}.{{ domain }}'
 rm_admin_mail: '{{ admin_mail }}'
-rm_ldap_base: '{{ openldap_base }}'
+rm_ldap_base: '{{ ldap_base }}'
 rm_ldap_dn: '{{ ldap_user }}'
 rm_ldap_pass: '{{ ldap_pass }}'
+
+##### calibre-web
+cw_smtp_host: '{{ smtp_host }}'
+cw_smtp_port: '{{ smtp_port }}'
+cw_smtp_tls: '{{ smtp_tls or smtp_starttls }}'
+cw_smtp_user: '{{ smtp_user }}'
+cw_smtp_pass: '{{ smtp_pass }}'
+cw_smtp_from: '{{ smtp_from }}'
+cw_ldap_user: '{{ ldap_user }}'
+cw_ldap_pass: '{{ ldap_pass }}'
+cw_ldap_base: '{{ ldap_base }}'

@@ -16,11 +16,14 @@
         name: _homelab
         group: _homelab
         comment: OBSD HomeLab user
-        home: /nonexistent
-        create_home: false
+        home: /var/homelab
         password: '*************'
         password_lock: true
         shell: /bin/ksh
+    - name: remove homelab ssh directory
+      file:
+        state: absent
+        path: /var/homelab/.ssh
   roles:
     - {role: lego}
     - {role: syslog}
@@ -32,10 +35,11 @@
     - {role: php}
     - {role: postgresql}
     - {role: mariadb}
-    # - {role: monica}
+    - {role: vaultwarden}
+    - {role: monica}
+    - {role: calibre_web}
     # - {role: redmine}
     # - {role: freshrss}
-    # - {role: calibre_web}
     # - {role: phpldapadmin}
     # - {role: nextcloud}
     # - {role: davical}
@@ -43,7 +47,6 @@
     # - {role: gitolite}
     # - {role: calibre}
     # - {role: gitea}
-    # - {role: vaultwarden}
     # - {role: synapse}
     # - {role: dendrite}
     # - {role: pf}

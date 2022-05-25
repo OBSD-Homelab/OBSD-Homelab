@@ -4,6 +4,7 @@ ansible_managed: 'Managed by OBSD HomeLab'
 ##### syslog
 syslog_logfiles_extra:
   - {file: '/var/log/vaultwarden', program: 'vaultwarden', user: '_vaultwarden', group: '_vaultwarden'}
+  - {file: '/var/log/vaultwarden_ldap', program: 'vaultwarden_ldap', user: '_vaultwarden', group: '_vaultwarden'}
   - {file: '/var/log/redmine', program: 'redmine', user: '_redmine', group: '_redmine'}
   - {file: '/var/log/znc', program: 'znc', user: '_znc', group: '_znc'}
   - {file: '/var/log/slapd', program: 'slapd', user: '_openldap', group: '_openldap'}
@@ -23,7 +24,6 @@ openldap_db_index_extra:
     comp: 'eq,pres'
 
 ##### ldap_data
-ldap_user: 'cn=ldap,ou=Users,dc=bsd,dc=ac'
 
 ##### saslauth
 sasl_ldap_servers:
