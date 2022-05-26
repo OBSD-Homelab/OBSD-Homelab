@@ -1,6 +1,11 @@
 ---
 ansible_managed: 'Managed by OBSD HomeLab'
 
+##### SMTP
+smtp_port: 587
+smtp_tls: false
+smtp_starttls: true
+
 ##### syslog
 syslog_logfiles_extra:
   - {file: '/var/log/vaultwarden', program: 'vaultwarden', user: '_vaultwarden', group: '_vaultwarden'}
