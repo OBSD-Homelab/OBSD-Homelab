@@ -25,28 +25,27 @@
         state: absent
         path: /var/homelab/.ssh
   roles:
-    - {role: lego}
-    - {role: syslog}
-    - {role: openldap}
-    - {role: ldap_data}
-    - {role: saslauth}
-    - {role: nginx}
-    - {role: redis}
-    - {role: php}
-    - {role: postgresql}
-    - {role: mariadb}
-    - {role: vaultwarden}
-    - {role: monica}
-    - {role: calibre_web}
-    # - {role: redmine}
-    # - {role: freshrss}
-    # - {role: phpldapadmin}
-    # - {role: nextcloud}
-    # - {role: davical}
-    # - {role: znc}
-    # - {role: gitolite}
-    # - {role: calibre}
-    # - {role: gitea}
-    # - {role: synapse}
-    # - {role: dendrite}
-    # - {role: pf}
+    - {role: lego, tags: ['lego']}
+    - {role: syslog, tags: ['syslog']}
+    - {role: openldap, tags: ['openldap']}
+    - {role: ldap_data, tags: ['ldap_data']}
+    - {role: saslauth, tags: ['saslauth']}
+    - {role: nginx, tags: ['nginx']}
+    - {role: redis, tags: ['redis']}
+    - {role: php, tags: ['php']}
+    - {role: postgresql, tags: ['postgresql']}
+    - {role: mariadb, tags: ['mariadb']}
+    - {role: vaultwarden, tags: ['vaultwarden']}
+    - {role: monica, tags: ['monica']}
+    - {role: calibre_web, tags: ['calibre_web']}
+    # - {role: redmine, tags: ['redmine']}
+    # - {role: freshrss, tags: ['freshrss']}
+    # - {role: phpldapadmin, tags: ['phpldapadmin']}
+    # - {role: nextcloud, tags:['nextcloud']}
+    # - {role: znc, tags:['znc']}
+    # - {role: gitolite, tags: ['gitolite']}
+    # - {role: calibre, tags: ['calibre']}
+    # - {role: gitea, tags: ['gitea']}
+    # - {role: synapse, tags: ['synapse']}
+    # - {role: dendrite, tags: ['dendrite']}
+    # - {role: pf, tags: ['pf']}

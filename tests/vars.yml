@@ -1,0 +1,21 @@
+---
+domain: homelab.test
+
+## email for the default admin account created on services
+admin_mail: admin@homelab.test  # john.doe@gmail.com
+
+## most services want a way to send notifications via email
+smtp_user: fake@homelab.test       # jane.doe@gmail.com
+smtp_pass: coolPassword            # <gmail password/token>
+smtp_host: smtp.homelab.test       # smtp.gmail.com
+smtp_port: 587                     # 465/587
+smtp_from_name: Homelab Test       # 'Jane Doe'
+smtp_from_mail: fake@homelab.test  # jane.doe+no-reply@gmail.com
+smtp_starttls: true                # true/false, STARTTLS is usually with port 587
+smtp_tls: false                    # true/false, Implicit TLS is usually with port 465
+
+
+## read lego docs https://obsd-homelab.github.io/OBSD-Homelab/lego/
+lego_dns: not_a_DNS
+lego_env:
+  fake_key: fake_val
