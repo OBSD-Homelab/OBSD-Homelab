@@ -20,7 +20,7 @@
     path: '/var/www/var/www'
     owner: root
     group: wheel
-    mode: '0777'
+    mode: '0755'
 
 - name: create nginx directories
   file:

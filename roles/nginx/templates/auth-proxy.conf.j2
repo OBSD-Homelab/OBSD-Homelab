@@ -1,5 +1,5 @@
 internal;
-proxy_pass http://{{ nginx_ldap_ip }}:{{ nginx_ldap_port }};
+proxy_pass http://{{ nginx_ldap_daemon_host }}:{{ nginx_ldap_daemon_port }};
 
 proxy_pass_request_body off;
 proxy_set_header Content-Length "";
@@ -7,10 +7,10 @@ proxy_cache auth_cache;
 proxy_cache_valid 200 10m;
 
 proxy_cache_key "$http_authorization$cookie_nginxauth";
-proxy_set_header X-Ldap-URL      "{{ nginx_ldap_uri }}";
-proxy_set_header X-Ldap-BaseDN   "{{ nginx_ldap_basedn }}";
-proxy_set_header X-Ldap-BindDN   "{{ nginx_ldap_binddn }}";
-proxy_set_header X-Ldap-BindPass "{{ nginx_ldap_bindpw }}";
-proxy_set_header X-CookieName "nginxauth";
+proxy_set_header X-Ldap-URL      "{{ nginx_ldap_host }}";
+proxy_set_header X-Ldap-BaseDN   "{{ nginx_ldap_base }}";
+proxy_set_header X-Ldap-BindDN   "{{ nginx_ldap_user }}";
+proxy_set_header X-Ldap-BindPass "{{ nginx_ldap_pass }}";
+proxy_set_header X-CookieName    "nginxauth";
 proxy_set_header Cookie nginxauth=$cookie_nginxauth;
 #proxy_set_header X-Ldap-Template "<< change me >>";

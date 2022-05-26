@@ -17,10 +17,9 @@ ldap_base: '{{ openldap_base }}'
 sasl_ldap_base: '{{ ldap_base }}'
 
 ##### nginx
-nginx_ldap_basedn: '{{ ldap_base }}'
-nginx_ldap_binddn: '{{ ldap_user }}'
-nginx_ldap_filter: '(mail=%(username)s)'
-nginx_ldap_bindpw: '{{ ldap_pass }}'
+nginx_ldap_base: '{{ ldap_base }}'
+nginx_ldap_user: '{{ ldap_user }}'
+nginx_ldap_pass: '{{ ldap_pass }}'
 
 ##### redis
 admin_dn: 'mail=admin@{{ domain }},ou=Users,{{ ldap_base }}'
