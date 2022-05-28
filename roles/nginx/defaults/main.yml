@@ -3,6 +3,7 @@ nginx_packages:
   - nginx
   - cyrus-sasl--ldap
   - py3-ldap
+  - git
 
 nginx_ldap_auth_version: 'ca5f4136bbce67a227ac41155188af248d75fe05'
 nginx_ldap_daemon_host: 127.0.0.1
