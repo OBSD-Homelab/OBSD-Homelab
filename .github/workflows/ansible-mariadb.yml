@@ -1,4 +1,4 @@
-name: ansible-deploy
+name: ansible-mariadb
 
 on:
   workflow_dispatch:
@@ -54,7 +54,6 @@ jobs:
         if ps -p $PID > /dev/null ; then echo "$PID is running"; else echo "$PID is not running"; fi
         mkdir -p ~/.ssh && echo "${{ secrets.QEMU_SSH_PRIVKEY }}" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
         printf "Host lab_hl\n  HostName 127.0.0.1\n  User root\n  Port 2222\n" > ~/.ssh/config
-        cat ~/.ssh/config
         ssh -o StrictHostKeyChecking=no -p 2222 lab_hl <<-EOF
         echo 'nameserver 8.8.8.8' > /etc/resolv.conf
         echo 'lookup file bind' >> /etc/resolv.conf
@@ -70,4 +69,4 @@ jobs:
     - name: Run ansible playbook
       run: |
         cd tests
-        ansible-playbook site.yml --tags nginx -v
+        ansible-playbook site.yml --tags mariadb -v
