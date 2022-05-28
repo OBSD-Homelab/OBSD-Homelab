@@ -50,7 +50,7 @@ jobs:
         sudo qemu-system-x86_64 -name OpenBSD_current,process=OpenBSD_current -m size=4G,slots=0,maxmem=4G -drive file=images/OpenBSD_current.qcow2,if=virtio -nographic -netdev user,id=user.0,hostfwd=tcp::2222-:22 -device virtio-net-pci,netdev=user.0 -chardev socket,path=ga.sock,server,nowait,id=qga0 -device isa-serial,chardev=qga0 > /dev/null 2>&1 &
         echo $! > qemu.pid
         PID=$(cat qemu.pid)
-        sleep 60
+        sleep 120
         if ps -p $PID > /dev/null ; then echo "$PID is running"; else echo "$PID is not running"; fi
         mkdir -p ~/.ssh && echo "${{ secrets.QEMU_SSH_PRIVKEY }}" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
         printf "Host lab_hl\n  HostName 127.0.0.1\n  User root\n  Port 2222\n" > ~/.ssh/config
