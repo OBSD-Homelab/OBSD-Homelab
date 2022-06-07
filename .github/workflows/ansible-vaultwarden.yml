@@ -81,4 +81,4 @@ jobs:
       - name: Run ansible playbook
         run: |
           cd tests
-          ansible-playbook site.yml --tags vaultwarden -v
+          ansible-playbook site.yml --tags postgresql,vaultwarden -v
