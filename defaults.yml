@@ -8,15 +8,15 @@ smtp_starttls: true
 
 ##### syslog
 syslog_logfiles_extra:
-  - {file: '/var/log/vaultwarden', program: 'vaultwarden', user: '_vaultwarden', group: '_vaultwarden'}
-  - {file: '/var/log/vaultwarden_ldap', program: 'vaultwarden_ldap', user: '_vaultwarden', group: '_vaultwarden'}
-  - {file: '/var/log/redmine', program: 'redmine', user: '_redmine', group: '_redmine'}
-  - {file: '/var/log/znc', program: 'znc', user: '_znc', group: '_znc'}
-  - {file: '/var/log/slapd', program: 'slapd', user: '_openldap', group: '_openldap'}
-  - {file: '/var/log/calibre_web', program: 'calibre_web', user: '_calibre', group: '_calibre'}
-  - {file: '/var/log/redis', program: 'redis', user: '_redis', group: '_redis'}
-  - {file: '/var/log/postgresql', program: 'postgresql', user: '_postgresql', group: '_postgresql'}
-  - {file: '/var/log/mysqld', program: 'mysqld', user: '_mysql', group: '_mysql'}
+  - {file: '/var/log/vaultwarden', program: 'vaultwarden'}
+  - {file: '/var/log/vaultwarden_ldap', program: 'vaultwarden_ldap'}
+  - {file: '/var/log/redmine', program: 'redmine'}
+  - {file: '/var/log/znc', program: 'znc'}
+  - {file: '/var/log/slapd', program: 'slapd'}
+  - {file: '/var/log/calibre_web', program: 'calibre_web'}
+  - {file: '/var/log/redis', program: 'redis'}
+  - {file: '/var/log/postgresql', program: 'postgresql'}
+  - {file: '/var/log/mysqld', program: 'mysqld'}
 
 ##### openldap
 openldap_schemas_extra:
