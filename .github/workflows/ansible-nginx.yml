@@ -9,9 +9,6 @@ on:
     branches:
       - '*'
 
-env:
-  URL_BASE: 'http://fwall.bsd.ac/'
-
 jobs:
   ansible-deploy:
     runs-on: ubuntu-latest
@@ -68,8 +65,6 @@ jobs:
           echo 'nameserver 8.8.8.8' > /etc/resolv.conf
           echo 'lookup file bind' >> /etc/resolv.conf
           EOF
-          #readarray -t if_arr < <(ifconfig | cut -d ' ' -f1| tr ':' '\n' | awk NF)
-          #for itf in "${if_arr[@]}"; do echo "checking with interface - ${itf}"; if_ip=$(ip -f inet addr show ${itf} | awk '/inet / {print $2}' | cut -d'/' -f1); ssh -o StrictHostKeyChecking=no -p 2222 root@${if_ip} ifconfig || echo "could not connect to ${if_ip}"; done
 
       - name: Create secrets.yml
         run: |
