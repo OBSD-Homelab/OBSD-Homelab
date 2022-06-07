@@ -43,6 +43,10 @@ jobs:
           cp openbsd-snapshots-x86_64.qcow2 images
           cp root_password images
 
+      - name: Copy OpenBSD-current qcow2
+        run: |
+          cp images/openbsd-snapshots-x86_64.qcow2 .
+
       - name: Start qemu image
         run: >-
           sudo qemu-system-x86_64 -name openbsd-snapshots,process=openbsd-snapshots
