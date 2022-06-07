@@ -26,7 +26,7 @@ salt="\$2b\$${rounds}\$%.22s"
 
 pass_hash=$(/usr/local/sbin/slappasswd -c "${salt}")
 
-/usr/local/bin/ldapmodify -Y EXTERNAL -Q -H 'ldapi://%2ftmp%2fslapd.sock' <<EOF
+/usr/local/bin/ldapmodify -Y EXTERNAL -Q -H 'ldapi://' <<EOF
 dn: olcDatabase={1}mdb,cn=config
 changetype: modify
 replace: olcRootPW

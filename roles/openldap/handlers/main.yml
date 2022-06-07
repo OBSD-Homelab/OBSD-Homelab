@@ -25,14 +25,8 @@
   become: true
   become_user: '{{ openldap_user }}'
   notify:
-    - test start slapd server
     - start slapd server
     - find post create scripts
-
-- name: test start slapd server
-  shell: |
-    SFLAG="$(rcctl get slapd flags)"
-    /usr/local/libexec/slapd -d 5 ${SFLAG}
 
 - name: start slapd server
   service:
@@ -48,5 +42,5 @@
   notify: execute post create scripts
 
 - name: execute post create scripts
-  command: ldapmodify -Y EXTERNAL -Q -H 'ldapi://%2ftmp%2fslapd.sock' -f '{{ item.path }}'
+  command: ldapmodify -Y EXTERNAL -Q -H 'ldapi://' -f '{{ item.path }}'
   with_items: '{{ _openldap_post_scripts.files }}'

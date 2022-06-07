@@ -12,8 +12,8 @@ openldap_listeners:
   - 'ldaps://'
   - 'ldap://'
   - 'ldapi://'
-  - 'ldapi://%2ftmp%2fslapd.sock'
-  - 'ldapi://%2fvar%2fwww%2ftmp%2fslapd.sock'
+  - 'ldapi://%2fvar%2frun%2fopenldap%2fslapd.sock'
+  - 'ldapi://%2fvar%2fwww%2fvar%2frun%2fopenldap%2fslapd.sock'
 
 openldap_directories:
   - /etc/slapd.d
@@ -21,6 +21,7 @@ openldap_directories:
   - /var/openldap
   - /var/openldap/data
   - /var/openldap/run
+  - /var/www/var/run/openldap
 
 openldap_tls: false
 openldap_enforce_tls: false
