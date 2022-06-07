@@ -16,57 +16,70 @@ jobs:
   ansible-deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
+      - name: Install packages
+        run: |
+          sudo apt install -y qemu-system-x86 ansible sshpass
+          sudo cp /usr/share/ovmf/OVMF.fd .
 
-    - name: Install packages
-      run: sudo apt install -y qemu-system-x86-64 telnet socat jq ansible
+      - name: Download latest OpenBSD-current qcow2 md5 sum
+        run: |
+          wget "https://github.com/OBSD-Homelab/openbsd-builder/releases/download/current/openbsd-snapshots-x86_64.sig"
+          wget "https://github.com/OBSD-Homelab/openbsd-builder/releases/download/current/root_password"
+          echo "QCOW2_SHA256=$(cat openbsd-snapshots-x86_64.sig|awk '{print $1}')" >> $GITHUB_ENV
+          echo "ROOT_PASS=$(cat root_password)" >> $GITHUB_ENV
 
-    - name: Download latest OpenBSD-current qcow2 md5 sum
-      run: |
-        wget "${URL_BASE}/OpenBSD_current.qcow2.md5"
-        echo "QCOW2_MD5=$(cat OpenBSD_current.qcow2.md5)" >> $GITHUB_ENV
+      - name: Cache OpenBSD-current qcow2
+        id: openbsd-current
+        uses: actions/cache@v3
+        with:
+          path: images
+          key: ${{ env.QCOW2_SHA256 }}-images
 
-    - name: Cache OpenBSD-current qcow2
-      id: openbsd-current
-      uses: actions/cache@v3
-      with:
-        path: images
-        key: ${{ env.QCOW2_MD5 }}-images
+      - name: Download latest OpenBSD-current qcow2
+        if: steps.openbsd-current.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p images
+          wget "https://github.com/OBSD-Homelab/openbsd-builder/releases/download/current/openbsd-snapshots-x86_64.qcow2"
+          cp openbsd-snapshots-x86_64.qcow2 images
+          cp root_password images
 
-    - name: Download latest OpenBSD-current qcow2
-      run: |
-        mkdir -p images
-        doDownload=0
-        if [ ! -f "images/OpenBSD_current.qcow2" ]; then echo "file does not exist"; doDownload=1; fi
-        if [ -f "images/OpenBSD_current.qcow2" ]; then csum=$(md5sum "images/OpenBSD_current.qcow2" | awk '{ print $1; }'); echo "current md5sum = ${csum}"; echo "online md5sum = ${{ env.QCOW2_MD5 }}"; if [ "$csum" != "${{ env.QCOW2_MD5 }}" ]; then echo "md5sums do not match"; doDownload=1; fi; fi
-        if [ "$doDownload" = 1 ]; then wget "${URL_BASE}/OpenBSD_current.qcow2"; mv OpenBSD_current.qcow2 images/; fi
+      - name: Start qemu image
+        run: >-
+          sudo qemu-system-x86_64 -name openbsd-snapshots,process=openbsd-snapshots
+          -bios OVMF.fd
+          -m size=4G,slots=0,maxmem=4G
+          -nographic
+          -device virtio-net-pci,netdev=user.0
+          -netdev user,id=user.0,hostfwd=tcp::2222-:22
+          -device virtio-scsi-pci,id=scsi
+          -device scsi-hd,drive=drive0,bootindex=0
+          -drive if=none,file=openbsd-snapshots-x86_64.qcow2,id=drive0,cache=writeback,discard=ignore,format=qcow2
+          > /dev/null 2>&1 &
 
-    - name: Start qemu image
-      run: |
-        sudo qemu-system-x86_64 -name OpenBSD_current,process=OpenBSD_current -m size=4G,slots=0,maxmem=4G -drive file=images/OpenBSD_current.qcow2,if=virtio -nographic -netdev user,id=user.0,hostfwd=tcp::2222-:22 -device virtio-net-pci,netdev=user.0 -chardev socket,path=ga.sock,server,nowait,id=qga0 -device isa-serial,chardev=qga0 > /dev/null 2>&1 &
-        echo $! > qemu.pid
-        PID=$(cat qemu.pid)
-        sleep 120
-        if ps -p $PID > /dev/null ; then echo "$PID is running"; else echo "$PID is not running"; fi
-        mkdir -p ~/.ssh && echo "${{ secrets.QEMU_SSH_PRIVKEY }}" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
-        printf "Host lab_hl\n  HostName 127.0.0.1\n  User root\n  Port 2222\n" > ~/.ssh/config
-        ssh -o StrictHostKeyChecking=no -p 2222 lab_hl <<-EOF
-        echo 'nameserver 8.8.8.8' > /etc/resolv.conf
-        echo 'lookup file bind' >> /etc/resolv.conf
-        EOF
-        #readarray -t if_arr < <(ifconfig | cut -d ' ' -f1| tr ':' '\n' | awk NF)
-        #for itf in "${if_arr[@]}"; do echo "checking with interface - ${itf}"; if_ip=$(ip -f inet addr show ${itf} | awk '/inet / {print $2}' | cut -d'/' -f1); ssh -o StrictHostKeyChecking=no -p 2222 root@${if_ip} ifconfig || echo "could not connect to ${if_ip}"; done
+      - name: Check qemu process
+        run: |
+          sleep 120
+          mkdir -p ~/.ssh
+          printf "Host *\n  StrictHostKeyChecking no\n  ConnectTimeout 10\n\nHost lab_hl\n  HostName 127.0.0.1\n  User root\n  Port 2222\n" > ~/.ssh/config
+          sshpass -f root_password ssh lab_hl <<-EOF
+          echo 'nameserver 8.8.8.8' > /etc/resolv.conf
+          echo 'lookup file bind' >> /etc/resolv.conf
+          EOF
+          #readarray -t if_arr < <(ifconfig | cut -d ' ' -f1| tr ':' '\n' | awk NF)
+          #for itf in "${if_arr[@]}"; do echo "checking with interface - ${itf}"; if_ip=$(ip -f inet addr show ${itf} | awk '/inet / {print $2}' | cut -d'/' -f1); ssh -o StrictHostKeyChecking=no -p 2222 root@${if_ip} ifconfig || echo "could not connect to ${if_ip}"; done
 
-    - name: Create secrets.yml
-      run: |
-        python3 scripts/gen_secrets.py
-        mv secrets.yml tests
+      - name: Create secrets.yml
+        run: |
+          python3 scripts/gen_secrets.py
+          mv secrets.yml tests
+          mkdir -p tests/group_vars
+          echo "ansible_ssh_pass: '${ROOT_PASS}'" >> tests/group_vars/all
+          ln -s all tests/group_vars/all.yml
 
-    - name: Run ansible playbook
-      run: |
-        cd tests
-        ansible-playbook site.yml --tags nginx -v
+      - name: Run ansible playbook
+        run: |
+          cd tests
+          ansible-playbook site.yml --tags nginx -v
