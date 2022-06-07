@@ -25,8 +25,14 @@
   become: true
   become_user: '{{ openldap_user }}'
   notify:
+    - test start slapd server
     - start slapd server
     - find post create scripts
+
+- name: test start slapd server
+  shell: |
+    SFLAG="$(rcctl get slapd flags)"
+    /usr/local/libexec/slapd -d 5 ${SFLAG}
 
 - name: start slapd server
   service:
