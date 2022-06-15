@@ -41,9 +41,9 @@ lego_args: '--dns.disable-cp'
 
 The default key/cert pair used by OBSD Homelab is
 
-| mode   | owner   | group   | path                   |
-|--------|---------|---------|------------------------|
-| `0640` | `_lego` | `_lego` | `/etc/ssl/homelab.key` |
-| `0644` | `_lego` | `_lego` | `etc/ssl/homelab.crt`  |
+| mode   | owner   | group   | path                   | notes       |
+|--------|---------|---------|------------------------|-------------|
+| `0640` | `_lego` | `_lego` | `/etc/ssl/homelab.key` | private key |
+| `0644` | `_lego` | `_lego` | `/etc/ssl/homelab.crt` | public key  |
 
 If managing certificates manually, create a `_lego` user account prior to running the OBSD Homelab setup. After generating the certificates, copy them to the above location with the correct owner/group/permissions, as the `_lego` group is used by services to access the protected private key.
