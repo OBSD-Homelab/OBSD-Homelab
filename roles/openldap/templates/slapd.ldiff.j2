@@ -72,7 +72,7 @@ olcRootDN: cn=admin,{{ openldap_base }}
 olcRootPW: {{ openldap_password_hash }}
 {% endif %}
 olcAccess: to attrs=userPassword by anonymous auth by self =xw by users auth
-olcAccess: to attrs=cn,gn,sn,givenName,uid,mail,hlSSHPublicKey by anonymous auth by self write by users read
+olcAccess: to attrs=cn,gn,sn,givenName,uid,mail,hlSSHPublicKey,hlPGPPublicKey by anonymous auth by self write by users read
 olcAccess: to attrs=objectClass,entry,member by anonymous auth by users read
 olcAccess: to dn.subtree={{ openldap_base }} by users search
 {% for db_index in openldap_db_index %}
