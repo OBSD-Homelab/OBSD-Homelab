@@ -76,6 +76,7 @@
   template:
     src: nginx_ldap_auth.j2
     dest: /etc/rc.d/nginx_ldap_auth
+    args: '-p {{nginx_ldap_daemon_port}}'
     mode: '0755'
     owner: root
     group: wheel

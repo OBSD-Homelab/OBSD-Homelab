@@ -8,7 +8,7 @@ daemon_logger="daemon.info"
 
 . /etc/rc.d/rc.subr
 
-pexp="/usr/local/bin/python3 /usr/local/libexec/nginx-ldap-auth/nginx-ldap-auth-daemon.py"
+pexp="/usr/local/bin/python3 /usr/local/libexec/nginx-ldap-auth/nginx-ldap-auth-daemon.py${daemon_flags:+ ${daemon_flags}}"
 
 rc_bg=YES
 rc_reload=NO

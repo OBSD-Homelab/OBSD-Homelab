@@ -7,7 +7,7 @@ nginx_packages:
 
 nginx_ldap_auth_version: 'ca5f4136bbce67a227ac41155188af248d75fe05'
 nginx_ldap_daemon_host: 127.0.0.1
-nginx_ldap_daemon_port: 8888
+nginx_ldap_daemon_port: 19238
 nginx_ldap_host: 'ldap://127.0.0.1'
 # nginx_ldap_base: 'dc=example,dc=com'
 # nginx_ldap_user: 'cn=nginx,ou=Users,dc=example,dc=com'
