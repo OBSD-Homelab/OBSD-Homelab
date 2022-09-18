@@ -3,4 +3,5 @@ objectClass: olcOverlayConfig
 objectClass: olcUniqueConfig
 olcOverlay: unique
 olcUniqueURI: ldap:///{{ openldap_base }}?mail?sub?(objectClass=hlUser)
+olcUniqueURI: ldap:///{{ openldap_base }}?uid?sub?(objectClass=hlUser)
 olcUniqueURI: ldap:///{{ openldap_base }}?hlAppName?sub?(objectClass=hlApplication)
