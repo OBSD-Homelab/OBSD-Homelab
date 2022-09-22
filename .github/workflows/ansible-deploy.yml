@@ -1,4 +1,4 @@
-name: ansible-nginx
+name: ansible-openldap
 
 on:
   workflow_dispatch:
@@ -12,6 +12,18 @@ on:
 jobs:
   ansible-deploy:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        tags:
+          - nginx
+          - php
+          - openldap,ldap_data
+          - mariadb
+          - postgresql
+          - redis
+          - syslog
+          - postgresql,vaultwarden
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -23,10 +35,8 @@ jobs:
 
       - name: Download latest OpenBSD-current qcow2 md5 sum
         run: |
-          wget "https://github.com/OBSD-Homelab/openbsd-builder/releases/download/current/openbsd-snapshots-x86_64.sig"
-          wget "https://github.com/OBSD-Homelab/openbsd-builder/releases/download/current/root_password"
-          echo "QCOW2_SHA256=$(cat openbsd-snapshots-x86_64.sig|awk '{print $1}')" >> $GITHUB_ENV
-          echo "ROOT_PASS=$(cat root_password)" >> $GITHUB_ENV
+          wget "https://github.com/OBSD-Homelab/openbsd-builder/releases/download/current/openbsd-snapshots-x86-64.sig"
+          echo "QCOW2_SHA256=$(cat openbsd-snapshots-x86-64.sig|awk '{print $1}')" >> $GITHUB_ENV
 
       - name: Cache OpenBSD-current qcow2
         id: openbsd-current
@@ -39,13 +49,12 @@ jobs:
         if: steps.openbsd-current.outputs.cache-hit != 'true'
         run: |
           mkdir -p images
-          wget "https://github.com/OBSD-Homelab/openbsd-builder/releases/download/current/openbsd-snapshots-x86_64.qcow2"
-          cp openbsd-snapshots-x86_64.qcow2 images
-          cp root_password images
+          wget "https://github.com/OBSD-Homelab/openbsd-builder/releases/download/current/openbsd-snapshots-x86-64.qcow2"
+          cp openbsd-snapshots-x86-64.qcow2 images
 
       - name: Copy OpenBSD-current qcow2
         run: |
-          cp images/openbsd-snapshots-x86_64.qcow2 .
+          cp images/openbsd-snapshots-x86-64.qcow2 .
 
       - name: Start qemu image
         run: >-
@@ -57,7 +66,7 @@ jobs:
           -netdev user,id=user.0,hostfwd=tcp::2222-:22
           -device virtio-scsi-pci,id=scsi
           -device scsi-hd,drive=drive0,bootindex=0
-          -drive if=none,file=openbsd-snapshots-x86_64.qcow2,id=drive0,cache=writeback,discard=ignore,format=qcow2
+          -drive if=none,file=openbsd-snapshots-x86-64.qcow2,id=drive0,cache=writeback,discard=ignore,format=qcow2
           > /dev/null 2>&1 &
 
       - name: Check qemu process
@@ -65,7 +74,7 @@ jobs:
           sleep 120
           mkdir -p ~/.ssh
           printf "Host *\n  StrictHostKeyChecking no\n  ConnectTimeout 10\n\nHost lab_hl\n  HostName 127.0.0.1\n  User root\n  Port 2222\n" > ~/.ssh/config
-          sshpass -f root_password ssh lab_hl <<-EOF
+          sshpass -p runner ssh lab_hl <<-EOF
           echo 'nameserver 8.8.8.8' > /etc/resolv.conf
           echo 'lookup file bind' >> /etc/resolv.conf
           EOF
@@ -75,10 +84,10 @@ jobs:
           python3 scripts/gen_secrets.py
           mv secrets.yml tests
           mkdir -p tests/group_vars
-          echo "ansible_ssh_pass: '${ROOT_PASS}'" >> tests/group_vars/all
+          echo "ansible_ssh_pass: 'runner'" >> tests/group_vars/all
           ln -s all tests/group_vars/all.yml
 
       - name: Run ansible playbook
         run: |
           cd tests
-          ansible-playbook site.yml --tags nginx -v
+          ansible-playbook site.yml --tags ${{ matrix.tags }} -v
