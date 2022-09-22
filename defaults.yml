@@ -17,6 +17,8 @@ syslog_logfiles_extra:
   - {file: '/var/log/redis', program: 'redis'}
   - {file: '/var/log/postgresql', program: 'postgresql'}
   - {file: '/var/log/mysqld', program: 'mysqld'}
+  - {file: '/var/log/jvb', program: 'jvb'}
+  - {file: '/var/log/jicofo', program: 'jicofo'}
 
 ##### openldap
 openldap_schemas_extra:
@@ -27,6 +29,10 @@ openldap_db_index_extra:
     comp: 'eq'
   - attr: 'hlAppName'
     comp: 'eq,pres'
+  - attr: 'uid'
+    comp: 'eq,pres'
+  - attr: 'mail'
+    comp: 'eq,pres,sub'
 
 ##### ldap_data
 
