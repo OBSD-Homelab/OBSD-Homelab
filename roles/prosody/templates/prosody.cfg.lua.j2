@@ -101,4 +101,11 @@ smacks_hibernation_time = 60
 smacks_max_hibernated_sessions = 1
 smacks_max_old_sessions = 1
 
+{% if prosody_secure_bosh %}
+consider_bosh_secure = true
+{% endif %}
+{% if prosody_secure_websockets %}
+consider_websockets_secure = true
+{% endif %}
+
 Include "conf.d/*.cfg.lua"

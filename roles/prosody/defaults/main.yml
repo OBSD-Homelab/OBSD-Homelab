@@ -7,3 +7,6 @@ prosody_packages:
   - '{{ prosody_lua }}dbi-pgsql'
 
 prosody_plugin_paths: []
+
+prosody_secure_bosh: false
+prosody_secure_websockets: false
