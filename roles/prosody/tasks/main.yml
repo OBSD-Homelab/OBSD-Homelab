@@ -16,6 +16,13 @@
     encoding: UTF-8
     template: template0
 
+- name: add prosody user to lego group
+  ansible.builtin.user:
+    name: _prosody
+    append: true
+    groups: _lego
+    create_home: false
+
 - name: create prosody global config
   ansible.builtin.template:
     src: prosody.cfg.lua.j2
@@ -33,6 +40,19 @@
     group: _prosody
     mode: '0640'
   notify: restart prosody
+
+- name: symlink certificates
+  ansible.builtin.file:
+    src: '/etc/ssl/{{ item }}'
+    path: '/etc/prosody/certs/{{ item }}'
+    state: link
+    follow: false
+    owner: _prosody
+    group: _prosody
+    mode: '0755'
+  with_items:
+    - homelab.crt
+    - homelab.key
 
 - name: enable prosody service
   ansible.builtin.service:
