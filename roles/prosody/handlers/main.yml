@@ -1,0 +1,5 @@
+---
+- name: restart prosody
+  ansible.builtin.service:
+    name: prosody
+    state: restarted

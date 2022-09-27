@@ -1,0 +1,9 @@
+---
+prosody_lua: lua53
+
+prosody_packages:
+  - prosody
+  - '{{ prosody_lua }}ldap'
+  - '{{ prosody_lua }}dbi-pgsql'
+
+prosody_plugin_paths: []

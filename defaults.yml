@@ -17,8 +17,11 @@ syslog_logfiles_extra:
   - {file: '/var/log/redis', program: 'redis'}
   - {file: '/var/log/postgresql', program: 'postgresql'}
   - {file: '/var/log/mysqld', program: 'mysqld'}
-  - {file: '/var/log/jvb', program: 'jvb'}
-  - {file: '/var/log/jicofo', program: 'jicofo'}
+  - {file: '/var/log/jvb', program: 'jvb', size: '50000'}
+  - {file: '/var/log/jicofo', program: 'jicofo', size: '50000'}
+  - {file: '/var/prosody/prosody.log', user: '_prosody', group: '_prosody', size: '50000', command: 'rcctl reload prosody'}
+  - {file: '/var/prosody/prosody.err', user: '_prosody', group: '_prosody', size: '50000', command: 'rcctl reload prosody'}
+  - {file: '/var/log/step_ca', program: 'step_ca'}
 
 ##### openldap
 openldap_schemas_extra:
@@ -37,8 +40,6 @@ openldap_db_index_extra:
 ##### ldap_data
 
 ##### saslauth
-sasl_ldap_servers:
-  - 'ldapi://%2ftmp%2fslapd.sock'
 
 ##### php
 php_version: '8.0'
@@ -49,3 +50,8 @@ vaultwarden: 'vaultwarden'
 ##### monica
 monica: 'monica'
 monica_php_version: '{{ php_version }}'
+
+##### prosody
+prosody: 'prosody'
+prosody_plugin_paths:
+  - '/usr/local/share/jitsi-prosody-plugins'

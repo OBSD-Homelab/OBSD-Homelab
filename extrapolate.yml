@@ -10,11 +10,14 @@ openldap_base: 'dc={{ domain | split(".") | join(",dc=") }}'
 openldap_base_dc: '{{ domain | split(".") | first }}'
 
 ##### ldap data
-ldap_user: 'cn=ldap,ou=Users,{{ openldap_base }}'
+ldap_user: 'uid=ldap,ou=InternalUsers,{{ openldap_base }}'
 ldap_base: '{{ openldap_base }}'
+ldap_domain: '{{ domain }}'
 
 ##### saslauth
 sasl_ldap_base: '{{ ldap_base }}'
+sasl_ldap_user: '{{ ldap_user }}'
+sasl_ldap_pass: '{{ ldap_pass }}'
 
 ##### nginx
 nginx_ldap_base: '{{ ldap_base }}'
@@ -55,3 +58,9 @@ cw_smtp_from: '{{ smtp_from }}'
 cw_ldap_user: '{{ ldap_user }}'
 cw_ldap_pass: '{{ ldap_pass }}'
 cw_ldap_base: '{{ ldap_base }}'
+
+##### prosody
+prosody_ldap_base: '{{ ldap_base }}'
+prosody_ldap_user: '{{ ldap_user }}'
+prosody_ldap_pass: '{{ ldap_pass }}'
+prosody_domain: '{{ prosody }}.{{ domain }}'

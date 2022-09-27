@@ -1,0 +1,44 @@
+---
+- name: install prosody packages
+  ansible.builtin.package:
+    name: '{{ prosody_packages }}'
+    state: present
+
+- name: create postgresql user
+  community.general.postgresql_user:
+    name: prosody
+    password: '{{ prosody_db_pass }}'
+
+- name: create postgresql databases
+  community.general.postgresql_db:
+    name: prosodyd
+    owner: prosody
+    encoding: UTF-8
+    template: template0
+
+- name: create prosody global config
+  ansible.builtin.template:
+    src: prosody.cfg.lua.j2
+    dest: /etc/prosody/prosody.cfg.lua
+    owner: _prosody
+    group: _prosody
+    mode: '0640'
+  notify: restart prosody
+
+- name: create prosody domain config
+  ansible.builtin.template:
+    src: domain.cfg.lua.j2
+    dest: '/etc/prosody/conf.d/{{ prosody_domain }}.cfg.lua'
+    owner: _prosody
+    group: _prosody
+    mode: '0640'
+  notify: restart prosody
+
+- name: enable prosody service
+  ansible.builtin.service:
+    name: prosody
+    state: started
+    enabled: true
+
+- name: flush_handlers
+  ansible.builtin.meta: flush_handlers

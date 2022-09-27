@@ -1,7 +1,7 @@
 ---
 - name: add base domain
   ldap_entry:
-    dn: '{{ openldap_base }}'
+    dn: '{{ ldap_base }}'
     objectClass:
       - dcObject
       - organization
@@ -11,12 +11,13 @@
 
 - name: add organizational units
   ldap_entry:
-    dn: 'ou={{ item }},{{ openldap_base }}'
+    dn: 'ou={{ item }},{{ ldap_base }}'
     objectClass:
       - organizationalUnit
     attributes:
       ou: '{{ item }}'
   with_items:
+    - 'InternalUsers'
     - 'Users'
     - 'Groups'
 
@@ -29,12 +30,15 @@
 
 - name: add ldap reader account
   ldap_entry:
-    dn: 'cn=ldap,ou=Users,{{ openldap_base }}'
+    dn: 'uid=ldap,ou=InternalUsers,{{ ldap_base }}'
     objectClass:
       - inetOrgPerson
+      - hlUser
     attributes:
+      uid: ldap
       cn: ldap
       sn: reader
+      mail: 'ldap@internal.{{ ldap_domain }}'
       userPassword: '{CRYPT}{{ _ldap_reader_hash.stdout }}'
 
 - name: get admin password hash
@@ -46,7 +50,7 @@
 
 - name: add admin account
   ldap_entry:
-    dn: 'mail={{ admin_mail }},ou=Users,{{ openldap_base }}'
+    dn: 'mail={{ admin_mail }},ou=Users,{{ ldap_base }}'
     objectClass:
       - inetOrgPerson
       - hlUser

@@ -14,7 +14,6 @@ smtp_from_mail: <CHANGE-ME>  # jane.doe+no-reply@gmail.com
 smtp_starttls: <CHANGE-ME>   # true/false, STARTTLS is usually with port 587
 smtp_tls: <CHANGE-ME>        # true/false, Implicit TLS is usually with port 465
 
-
 ## read lego docs https://obsd-homelab.github.io/OBSD-Homelab/lego/
 lego_dns: <CHANGE-ME>
 lego_env:
