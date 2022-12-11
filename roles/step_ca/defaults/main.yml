@@ -1,0 +1,10 @@
+---
+step_packages:
+  - step-ca
+  - step-cli
+
+step_name: 'OBSD-Homelab'
+
+#step_admin:
+#step_address:
+#step_dns:

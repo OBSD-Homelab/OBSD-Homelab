@@ -1,0 +1,65 @@
+---
+- name: install step-ca packages
+  ansible.builtin.package:
+    name: '{{ step_packages }}'
+
+- name: create general password file
+  ansible.builtin.template:
+    src: password.key.j2
+    dest: /var/step-ca/password.key
+    owner: root
+    group: _step-ca
+    mode: '0640'
+
+- name: create provisioner password file
+  ansible.builtin.template:
+    src: provisioner-password.key.j2
+    dest: /var/step-ca/provisioner-password.key
+    owner: root
+    group: _step-ca
+    mode: '0640'
+
+- name: initialize step-ca
+  ansible.builtin.command:
+    cmd: |
+      /usr/local/bin/step ca init --deployment-type=standalone
+      --name='{{ step_name }}' --dns={{ step_dns | join(' --dns=') }}
+      --address={{ step_address | join(' --address=') }}
+      --provisioner={{ step_admin_mail }} --password-file=/var/step-ca/password.key
+      --provisioner-password-file=/var/step-ca/provisioner-password.key
+    creates: /var/step-ca/config/defaults.json
+  become: true
+  become_user: _step-ca
+  environment:
+    STEPPATH: /var/step-ca
+
+- name: enable and start step-ca service
+  ansible.builtin.service:
+    name: step_ca
+    args: config/ca.json --password-file=/var/step-ca/password.key
+    enabled: true
+    state: started
+
+- name: load step-ca config
+  ansible.builtin.slurp:
+    path: '/var/step-ca/config/ca.json'
+  register: _step_config
+
+- name: set fact from step-ca config
+  ansible.builtin.set_fact:
+    step_config: '{{ _step_config["content"] | b64decode | from_json }}'
+
+- debug:
+    var: step_config
+
+- name: add acme provisioner
+  ansible.builtin.command:
+    cmd: |
+      /usr/local/bin/step ca provisioner add acme --type ACME
+      --ca-config /var/step-ca/config/ca.json
+      --password-file /var/step-ca/password.key
+  become: true
+  become_user: _step-ca
+  register: _step_acme
+  changed_when: _step_acme.rc == 0
+  failed_when: _step_acme.rc != 0 and 'provisioner with name acme already exists' not in _step_acme.stderr
