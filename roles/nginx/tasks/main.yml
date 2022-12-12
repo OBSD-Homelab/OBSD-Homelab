@@ -1,20 +1,20 @@
 ---
 - name: install nginx packages
-  package:
+  ansible.builtin.package:
     name: '{{ nginx_packages }}'
     state: present
 
 - name: set up /var/www/ directories
-  file:
+  ansible.builtin.file:
     path: "/var/www/{{ item }}"
     state: directory
     mode: '0755'
     owner: root
     group: wheel
-  with_items: ["var", "var/run"]
+  with_items: ["acme/.well-known", "var", "var/run"]
 
 - name: create /var/www/var/www -> /var/www symlink
-  file:
+  ansible.builtin.file:
     state: link
     src: '..'
     path: '/var/www/var/www'
@@ -22,8 +22,17 @@
     group: wheel
     mode: '0755'
 
+- name: create /var/www/acme/.well-known/acme-chellenge -> /var/www/acme symlink
+  ansible.builtin.file:
+    state: link
+    src: '..'
+    path: '/var/www/acme/.well-known/acme-challenge'
+    owner: root
+    group: wheel
+    mode: '0755'
+
 - name: create nginx directories
-  file:
+  ansible.builtin.file:
     path: "/etc/nginx/{{ item }}"
     state: directory
     owner: root
@@ -32,7 +41,7 @@
   with_items: ["configs", "sites-available", "sites-enabled"]
 
 - name: copy nginx config
-  copy:
+  ansible.builtin.copy:
     src: nginx.conf
     dest: /etc/nginx/nginx.conf
     owner: root
@@ -41,7 +50,7 @@
   notify: restart nginx
 
 - name: copy nginx sub-configs
-  copy:
+  ansible.builtin.copy:
     src: configs/
     dest: /etc/nginx/configs/
     owner: root
@@ -50,7 +59,7 @@
   notify: restart nginx
 
 - name: create auth-proxy config
-  template:
+  ansible.builtin.template:
     src: auth-proxy.conf.j2
     dest: /etc/nginx/configs/auth-proxy.conf
     owner: root
@@ -59,13 +68,13 @@
   notify: restart nginx
 
 - name: setup nginx-ldap-auth
-  git:
+  ansible.builtin.git:
     repo: https://github.com/Excision-Mail/nginx-ldap-auth
     dest: '/usr/local/libexec/nginx-ldap-auth'
     version: '{{ nginx_ldap_auth_version }}'
 
 - name: create nginx-ldap-auth launcher
-  template:
+  ansible.builtin.template:
     src: nginx_ldap_auth-launcher.j2
     dest: /usr/local/libexec/nginx_ldap_auth-launcher
     owner: root
@@ -73,30 +82,20 @@
     mode: '0755'
 
 - name: create nginx-ldap-auth service
-  template:
+  ansible.builtin.template:
     src: nginx_ldap_auth.j2
     dest: /etc/rc.d/nginx_ldap_auth
-    args: '-p {{nginx_ldap_daemon_port}}'
     mode: '0755'
     owner: root
     group: wheel
   notify: restart nginx-ldap-auth service
 
 - name: enable nginx-ldap-auth service
-  service:
+  ansible.builtin.service:
     name: nginx_ldap_auth
+    args: '-p {{nginx_ldap_daemon_port}}'
     state: started
     enabled: true
-
-- name: create site configs
-  template:
-    src: "{{ item }}"
-    dest: "/etc/nginx/sites-available/{{ item | basename | regex_replace('\\.j2$', '') }}"
-    owner: root
-    group: wheel
-    mode: '0644'
-  notify: restart nginx
-  with_items: "{{ lookup('fileglob', '../templates/sites-available/*.conf.j2') }}"
 
 - name: start and enable nginx
   service:
