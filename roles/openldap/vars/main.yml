@@ -10,3 +10,5 @@ openldap_frontend_overlays: '{{ openldap_frontend_overlays_default + openldap_fr
 openldap_db_index: '{{ openldap_db_index_default + openldap_db_index_extra }}'
 
 openldap_data_overlays: '{{ openldap_data_overlays_default + openldap_data_overlays_extra }}'
+
+openldap_listeners: '{{ openldap_listeners_default + openldap_listeners_extra }}'

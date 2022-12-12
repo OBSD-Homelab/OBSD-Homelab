@@ -8,31 +8,39 @@ openldap_packages:
 openldap_user: '_openldap'
 openldap_group: '_openldap'
 
-openldap_listeners:
-  - 'ldaps://'
-  - 'ldap://'
+openldap_listeners_default:
+  - 'ldaps://0.0.0.0'
+  - 'ldap://0.0.0.0'
   - 'ldapi://'
-  - 'ldapi://%2fvar%2frun%2fopenldap%2fslapd.sock'
   - 'ldapi://%2fvar%2fwww%2fvar%2frun%2fopenldap%2fslapd.sock'
+
+openldap_listeners_extra: []
 
 openldap_directories:
   - /etc/slapd.d
   - /etc/openldap/schema2ldif
   - /var/openldap
   - /var/openldap/data
+  - /var/openldap/accesslog
   - /var/openldap/run
   - /var/www/var/run/openldap
 
 openldap_tls: false
-openldap_enforce_tls: false
+openldap_tls_force: false
+openldap_tls_key: '/etc/ssl/ldap.key'
 openldap_tls_cert: '/etc/ssl/ldap.crt'
-openldap_tls_ca_cert: '/etc/ssl/ldap.crt'
-openldap_tls_key: '/etc/ssl/private/ldap.key'
+openldap_tls_ca_cert: '/etc/ssl/cert.pem'
+
+openldap_syncprov_is_provider: false
+openldap_syncprov_is_consumer: false
+openldap_syncprov_tls_key: '{{ openldap_tls_key }}'
+openldap_syncprov_tls_cert: '{{ openldap_tls_cert }}'
 
 openldap_modules_default:
   - dynlist.la
   - rwm.la
   - unique.la
+  - accesslog.la
 
 openldap_modules_extra: []
 
@@ -69,7 +77,12 @@ openldap_db_index_default:
 openldap_db_index_extra: []
 
 openldap_data_overlays_default:
+  - overlay_accesslog.ldif.j2  # must be first
   - overlay_unique.ldif.j2
   - overlay_dynlist.ldif.j2
 
 openldap_data_overlays_extra: []
+
+openldap_syncprov_enable: false
+openldap_server_ids: []
+openldap_x509_clients: []

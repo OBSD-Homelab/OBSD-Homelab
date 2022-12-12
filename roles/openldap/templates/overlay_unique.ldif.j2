@@ -2,6 +2,7 @@ dn: olcOverlay=unique,olcDatabase={1}mdb,cn=config
 objectClass: olcOverlayConfig
 objectClass: olcUniqueConfig
 olcOverlay: unique
-olcUniqueURI: ldap:///{{ openldap_base }}?mail?sub?(objectClass=hlUser)
-olcUniqueURI: ldap:///{{ openldap_base }}?uid?sub?(objectClass=hlUser)
-olcUniqueURI: ldap:///{{ openldap_base }}?hlAppName?sub?(objectClass=hlApplication)
+olcUniqueURI: ldap:///{{ openldap_base }}?bsdUID?sub?(objectClass=bsdUser)
+olcUniqueURI: ldap:///{{ openldap_base }}?uidNumber?sub?(objectClass=bsdUser)
+olcUniqueURI: ldap:///{{ openldap_base }}?bsdGID?sub?(objectClass=bsdGroup)
+olcUniqueURI: ldap:///{{ openldap_base }}?gidNumber?sub?(objectClass=bsdGroup)

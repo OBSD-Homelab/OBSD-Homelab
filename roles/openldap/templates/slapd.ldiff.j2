@@ -5,19 +5,27 @@ olcArgsFile: /var/openldap/run/slapd.args
 olcPidFile: /var/openldap/run/slapd.pid
 olcPasswordCryptSaltFormat: $2b${{ openldap_bcrypt_rounds|default(12) }}$%.22s
 olcAuthzRegexp: gidNumber=0\+uidNumber=0,cn=peercred,cn=external,cn=auth cn=admin,{{ openldap_base }}
+olcLogLevel: any
+{% for client in openldap_x509_clients %}
+olcAuthzRegexp: {{ client.bind_dn }} {{ client.auth_dn | default('cn=admin,' + openldap_base) }}
+{% endfor %}
 olcLocalSSF: 128
-{% if openldap_server_id is defined %}
-olcServerID: {{ openldap_server_id }}
-{% endif %}
-{% if openldap_enforce_tls %}
+{% for oserver in openldap_server_ids %}
+olcServerID: {{ oserver.id }} {{ oserver.uri }}
+{% endfor %}
+{% if openldap_tls %}
+{% if openldap_tls_force %}
 olcSecurity: tls=1
 {% endif %}
-{% if openldap_tls %}
 olcTLSCACertificateFile: {{ openldap_tls_ca_cert }}
 olcTLSCertificateFile: {{ openldap_tls_cert }}
+{% if openldap_tls_key is defined %}
 olcTLSCertificateKeyFile: {{ openldap_tls_key }}
 {% endif %}
-
+{% if openldap_tls_verify_client is defined %}
+olcTLSVerifyClient: {{ openldap_tls_verify_client }}
+{% endif %}
+{% endif %}
 
 dn: cn=schema,cn=config
 objectClass: olcSchemaConfig
@@ -47,7 +55,6 @@ objectClass: olcFrontendConfig
 olcDatabase: {-1}frontend
 olcPasswordHash: {CRYPT}
 olcRootDN: cn=admin,{{ openldap_base }}
-olcAccess: to * by dn.exact=gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth manage
 
 {% for overlay in openldap_frontend_overlays %}
 
@@ -59,7 +66,7 @@ dn: olcDatabase={0}config,cn=config
 objectClass: olcDatabaseConfig
 olcDatabase: {0}config
 olcRootDN: cn=admin,{{ openldap_base }}
-olcAccess: to * by dn.exact=gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth manage
+
 
 dn: olcDatabase={1}mdb,cn=config
 objectClass: olcDatabaseConfig
@@ -71,13 +78,48 @@ olcRootDN: cn=admin,{{ openldap_base }}
 {% if openldap_password_hash is defined %}
 olcRootPW: {{ openldap_password_hash }}
 {% endif %}
+olcLimits: dn.exact="cn=admin,{{ openldap_base }}" time.soft=unlimited time.hard=unlimited size.soft=unlimited size.hard=unlimited
 olcAccess: to attrs=userPassword by anonymous auth by self =xw by users auth
-olcAccess: to attrs=cn,gn,sn,givenName,uid,mail,hlSSHPublicKey,hlPGPPublicKey by anonymous auth by self write by users read
-olcAccess: to attrs=objectClass,entry,member by anonymous auth by users read
+olcAccess: to attrs=cn,gn,givenName,sn,loginShell,mail,sshPublicKey,gecos by anonymous auth by self write by users read
+olcAccess: to attrs=objectClass,entry,member,bsdUID,bsdGID,uidNumber,gidNumber,bsdCID,homeDirectory,memberUID by anonymous auth by users read
 olcAccess: to dn.subtree={{ openldap_base }} by users search
 {% for db_index in openldap_db_index %}
 olcDbIndex: {{ db_index.attr }} {{ db_index.comp }}
 {% endfor %}
+{% if openldap_syncprov_is_consumer %}
+olcSyncRepl: rid={{ openldap_syncprov_rid }} provider={{ openldap_syncprov_provider }} searchbase={{ openldap_base }} bindmethod=sasl saslmech=external tls_key={{ openldap_syncprov_tls_key }} tls_cert={{ openldap_syncprov_tls_cert }} tls_cacert=/etc/ssl/cert.pem tls_reqcert=demand scope=sub type=refreshAndPersist retry="60 +"
+olcUpdateref: {{ openldap_syncprov_provider }}
+{% endif %}
+
+# this needs to be before the overlays as it is used for storage by the overlays
+dn: olcDatabase={2}mdb,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcMdbConfig
+olcDatabase: {2}mdb
+olcDbDirectory: /var/openldap/accesslog
+olcSuffix: cn=accesslog
+olcRootDN: cn=admin,cn=accesslog
+olcAccess: to * by dn.exact="cn=admin,{{ openldap_base }}" read
+olcSizeLimit: unlimited
+olcTimeLimit: unlimited
+olcDbIndex: default eq
+olcDbIndex: entryCSN,objectClass,reqEnd,reqResult,reqStart,reqDN
+
+
+{% if openldap_syncprov_is_provider %}
+dn: olcOverlay=syncprov,olcDatabase={1}mdb,cn=config
+objectClass: olcOverlayConfig
+objectClass: olcSyncProvConfig
+olcOverlay: syncprov
+olcSpCheckpoint: 1 60
+
+dn: olcOverlay=syncprov,olcDatabase={2}mdb,cn=config
+objectClass: olcOverlayConfig
+objectClass: olcSyncProvConfig
+olcOverlay: syncprov
+olcSpNoPresent: TRUE
+olcSpReloadHint: TRUE
+{% endif %}
 
 {% for overlay in openldap_data_overlays %}
 

@@ -16,7 +16,7 @@
   service:
     name: slapd
     enabled: true
-    args: -u {{ openldap_user }} -g {{ openldap_group }} -F /etc/slapd.d -h \'{{ openldap_listeners | join(" ") }}\'
+    args: -u {{ openldap_user }} -g {{ openldap_group }} -F /etc/slapd.d -h {{ openldap_listeners | join("\\ ") }}
 
 - name: make openldap directories
   file:
