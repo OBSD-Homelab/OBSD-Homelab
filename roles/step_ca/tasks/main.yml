@@ -49,9 +49,6 @@
   ansible.builtin.set_fact:
     step_config: '{{ _step_config["content"] | b64decode | from_json }}'
 
-- debug:
-    var: step_config
-
 - name: add acme provisioner
   ansible.builtin.command:
     cmd: |
@@ -63,3 +60,4 @@
   register: _step_acme
   changed_when: _step_acme.rc == 0
   failed_when: _step_acme.rc != 0 and 'provisioner with name acme already exists' not in _step_acme.stderr
+  notify: restart step-ca

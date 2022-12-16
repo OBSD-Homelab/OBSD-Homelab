@@ -1,0 +1,5 @@
+---
+- name: restart step-ca
+  ansible.builtin.service:
+    name: step_ca
+    state: restarted
