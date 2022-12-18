@@ -60,4 +60,6 @@
   register: _step_acme
   changed_when: _step_acme.rc == 0
   failed_when: _step_acme.rc != 0 and 'provisioner with name acme already exists' not in _step_acme.stderr
-  notify: restart step-ca
+  notify:
+    - restart step-ca
+    - increase acme timeout

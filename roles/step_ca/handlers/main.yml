@@ -3,3 +3,12 @@
   ansible.builtin.service:
     name: step_ca
     state: restarted
+
+- name: increase acme timeout
+  ansible.builtin.command: |
+    /usr/local/bin/step ca provisioner update acme
+    --x509-max-dur=720h --x509-default-dur=720h
+    --password-file /var/step-ca/password.key
+    --ca-config /var/step-ca/config/ca.json -h
+  become: true
+  become_user: _step-ca
