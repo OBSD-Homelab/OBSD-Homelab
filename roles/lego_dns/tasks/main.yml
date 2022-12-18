@@ -46,9 +46,9 @@
     group: '{{ item.key.group | default("wheel") }}'
     mode: '{{ item.key.mode | default("0640") }}'
   with_items:
-    - src: '_.{{ domain }}.crt'
+    - src: '_.{{ lego_dns_domain }}.crt'
       key: '{{ lego_dns_pubkey }}'
-    - src: '_.{{ domain }}.key'
+    - src: '_.{{ lego_dns_domain }}.key'
       key: '{{ lego_dns_privkey }}'
 
 - name: install daily.local.lego_dns_domain
