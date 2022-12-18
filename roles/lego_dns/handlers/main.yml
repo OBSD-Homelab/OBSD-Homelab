@@ -1,0 +1,6 @@
+---
+- name: restart services
+  ansible.builtin.service:
+    name: '{{ item }}'
+    state: restarted
+  with_items: '{{ lego_dns_services }}'

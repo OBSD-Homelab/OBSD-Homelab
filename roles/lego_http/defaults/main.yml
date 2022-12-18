@@ -1,0 +1,18 @@
+---
+#lego_http_mail:
+#lego_http_domain:
+#lego_http_acme_server:
+
+lego_http_pubkey:
+  path: '/etc/ssl/{{ lego_http_domain }}.crt'
+
+lego_http_privkey:
+  path: '/etc/ssl/{{ lego_http_domain }}.key'
+
+lego_http_services: []
+lego_http_args: ''
+lego_http_env_default:
+  PATH: /usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
+lego_http_env_extra: {}
+lego_http_packages:
+  - lego

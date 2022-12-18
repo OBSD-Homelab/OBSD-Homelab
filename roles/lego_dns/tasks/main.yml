@@ -1,0 +1,63 @@
+---
+- name: install lego packages
+  package:
+    name: '{{ lego_dns_packages }}'
+    state: present
+
+- name: create lego directories
+  file:
+    path: '/etc/lego/'
+    state: directory
+    owner: _lego
+    group: _lego
+    mode: '0700'
+
+- name: create lego environment
+  template:
+    src: homelab_domain.env.j2
+    dest: '/etc/lego/homelab_dns_{{ lego_dns_domain }}.env'
+    mode: '0600'
+    owner: _lego
+    group: _lego
+
+- name: create certificates using lego
+  command:
+    cmd:
+      /usr/local/bin/lego --accept-tos
+      --dns {{ lego_dns_provider }}
+      --path /etc/lego
+      --email {{ lego_dns_mail }}
+      --domains '*.{{ lego_dns_domain }}'
+      {% if lego_dns_server is defined %}--server {{ lego_dns_server }} {% endif %}
+      {{ lego_dns_args }}
+      run
+    creates: '/etc/lego/certificates/_.{{ lego_dns_domain }}.crt'
+  environment: '{{ lego_dns_env }}'
+  become: true
+  become_user: _lego
+  notify: restart services
+
+- name: install certificates
+  ansible.builtin.copy:
+    src: '/etc/lego/certificates/{{ item.src }}'
+    dest: '{{ item.key.path }}'
+    remote_src: true
+    owner: '{{ item.key.owner | default("root") }}'
+    group: '{{ item.key.group | default("wheel") }}'
+    mode: '{{ item.key.mode | default("0640") }}'
+  with_items:
+    - src: '_.{{ domain }}.crt'
+      key: '{{ lego_dns_pubkey }}'
+    - src: '_.{{ domain }}.key'
+      key: '{{ lego_dns_privkey }}'
+
+- name: install daily.local.lego_dns_domain
+  ansible.builtin.template:
+    src: daily.local.lego_dns_domain.j2
+    dest: '/etc/daily.local.d/lego_dns_{{ lego_dns_domain }}'
+    owner: root
+    group: wheel
+    mode: '0640'
+
+- name: flush_handlers
+  meta: flush_handlers

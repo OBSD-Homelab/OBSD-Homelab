@@ -1,0 +1,18 @@
+---
+#lego_dns_mail:
+#lego_dns_domain:
+#lego_dns_acme_server:
+
+lego_dns_pubkey:
+  path: '/etc/ssl/_.{{ lego_dns_domain }}.crt'
+
+lego_dns_privkey:
+  path: '/etc/ssl/_.{{ lego_dns_domain }}.key'
+
+lego_dns_services: []
+lego_dns_args: ''
+lego_dns_env_default:
+  PATH: /usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
+lego_dns_env_extra: {}
+lego_dns_packages:
+  - lego

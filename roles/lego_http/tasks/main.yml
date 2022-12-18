@@ -1,0 +1,45 @@
+---
+- name: create lego environment
+  ansible.builtin.template:
+    src: homelab_domain.env.j2
+    dest: '/etc/lego/homelab_{{ lego_http_domain }}.env'
+    mode: '0600'
+    owner: root
+    group: wheel
+
+- name: create certificates using lego
+  ansible.builtin.command:
+    cmd: |
+      /usr/local/bin/lego --accept-tos
+      --http --http.webroot /var/www/acme
+      --path /etc/lego
+      --email {{ lego_http_mail }}
+      --domains {{ lego_http_domain }}
+      {% if lego_server is defined %} --server https://{{ lego_http_acme_server }} {% endif %}
+      {{ lego_http_args }}
+      run
+    creates: '/etc/lego/certificates/{{ lego_http_domain }}.crt'
+  environment: '{{ lego_http_env_merged }}'
+
+- name: install certificates
+  ansible.builtin.copy:
+    src: '/etc/lego/certificates/{{ item.src }}'
+    dest: '{{ item.key.path }}'
+    remote_src: true
+    owner: '{{ item.key.owner | default("root") }}'
+    group: '{{ item.key.group | default("wheel") }}'
+    mode: '{{ item.key.mode | default("0640") }}'
+  with_items:
+    - key: '{{ lego_http_privkey }}'
+      src: '{{ lego_http_domain }}.key'
+    - key: '{{ lego_http_pubkey }}'
+      src: '{{ lego_http_domain }}.crt'
+  notify: restart services
+
+- name: install daily.local.lego_http_domain
+  ansible.builtin.template:
+    src: daily.local.lego_http_domain.j2
+    dest: '/etc/daily.local.d/lego_http_{{ lego_http_domain }}'
+    owner: root
+    group: wheel
+    mode: '0640'

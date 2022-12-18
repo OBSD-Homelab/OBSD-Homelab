@@ -1,0 +1,27 @@
+next_part "Updating lego certificates for {{ lego_http_domain }}"
+
+lego_out="$(env $(cat /etc/lego/homelab_{{ lego_http_domain }}.env | xargs) \
+    /usr/local/bin/lego --accept-tos \
+    --http --http.webroot /var/www/acme \
+    --path /etc/lego \
+    --email {{ lego_http_mail }} \
+    --domains {{ lego_http_domain }} \
+    --server https://{{ lego_http_acme_server }} \
+    {{ lego_http_args }} \
+    renew 2>&1
+)"
+
+printf %s\\n "${lego_out}"
+
+case "${lego_out}" in
+*"no renewal.")
+    ;;
+*)
+    install -m {{ lego_http_pubkey.mode | default('0640') }} -o {{ lego_http_pubkey.owner | default('root') }} -g {{ lego_http_pubkey.group | default('wheel') }}  /etc/lego/certificates/{{ lego_http_domain }}.crt {{ lego_http_pubkey.path }}
+    install -m {{ lego_http_privkey.mode | default('0640') }} -o {{ lego_http_privkey.owner | default('root') }} -g {{ lego_http_privkey.group | default('wheel') }} /etc/lego/certificates/{{ lego_http_domain }}.key {{ lego_http_privkey.path }}
+    [ -f /usr/local/libexec/lego_hook_{{ lego_http_domain }} ] && /usr/local/libexec/lego_hook_{{ lego_http_domain }}
+{% if lego_http_services|count > 0 %}
+    rcctl restart {{ lego_http_services | join(' ') }}
+{% endif %}
+    ;;
+esac

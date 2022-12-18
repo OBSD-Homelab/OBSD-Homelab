@@ -1,0 +1,26 @@
+next_part "Updating lego certificates for {{ lego_dns_domain }}"
+
+lego_out=$(su -s /bin/ksh _lego -c "env $(cat /etc/lego/homelab_dns_{{ lego_dns_domain }}.env | xargs) \
+    /usr/local/bin/lego --accept-tos \
+    --dns {{ lego_dns_provider }} \
+    --path /etc/lego \
+    --email {{ lego_dns_mail }} \
+    --domains '*.{{ lego_dns_domain }}' \
+    {{ lego_dns_args }} \
+    renew 2>&1
+")
+
+printf %s\\n "${lego_out}"
+
+case "${lego_out}" in
+*"no renewal.")
+    ;;
+*)
+    install -m {{ lego_dns_pubkey.mode | default('0640') }} -o {{ lego_dns_pubkey.owner | default('root') }} -g {{ lego_dns_pubkey.group | default('wheel') }}  /etc/lego/certificates/_.{{ lego_dns_domain }}.crt {{ lego_dns_pubkey.path }}
+    install -m {{ lego_dns_privkey.mode | default('0640') }} -o {{ lego_dns_privkey.owner | default('root') }} -g {{ lego_dns_privkey.group | default('wheel') }} /etc/lego/certificates/_.{{ lego_dns_domain }}.key {{ lego_dns_privkey.path }}
+    [ -f /usr/local/libexec/lego_hook_{{ lego_dns_domain }} ] && /usr/local/libexec/lego_hook_{{ lego_dns_domain }}
+{% if lego_dns_services|count > 0 %}
+    rcctl restart {{ lego_dns_services | join(' ') }}
+{% endif %}
+    ;;
+esac

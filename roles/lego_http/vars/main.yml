@@ -1,0 +1,2 @@
+---
+lego_http_env_merged: '{{ lego_http_env_default | combine(lego_http_env_extra) }}'
