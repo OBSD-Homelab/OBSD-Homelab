@@ -28,7 +28,7 @@
       --path /etc/lego
       --email {{ lego_dns_mail }}
       --domains '*.{{ lego_dns_domain }}'
-      {% if lego_dns_server is defined %}--server {{ lego_dns_server }} {% endif %}
+      {% if lego_dns_acme_server is defined %}--server {{ lego_dns_acme_server }} {% endif %}
       {{ lego_dns_args }}
       run
     creates: '/etc/lego/certificates/_.{{ lego_dns_domain }}.crt'

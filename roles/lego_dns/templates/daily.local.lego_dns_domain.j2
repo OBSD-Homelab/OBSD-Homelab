@@ -6,6 +6,7 @@ lego_out=$(su -s /bin/ksh _lego -c "env $(cat /etc/lego/homelab_dns_{{ lego_dns_
     --path /etc/lego \
     --email {{ lego_dns_mail }} \
     --domains '*.{{ lego_dns_domain }}' \
+    {% if lego_dns_acme_server is defined %}--server {{ lego_dns_acme_server }} {% endif %}\
     {{ lego_dns_args }} \
     renew 2>&1
 ")

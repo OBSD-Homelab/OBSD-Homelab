@@ -5,9 +5,11 @@
 
 lego_http_pubkey:
   path: '/etc/ssl/{{ lego_http_domain }}.crt'
+  mode: '0644'
 
 lego_http_privkey:
   path: '/etc/ssl/{{ lego_http_domain }}.key'
+  mode: '0640'
 
 lego_http_services: []
 lego_http_args: ''

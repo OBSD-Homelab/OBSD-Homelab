@@ -6,7 +6,7 @@ lego_out="$(env $(cat /etc/lego/homelab_{{ lego_http_domain }}.env | xargs) \
     --path /etc/lego \
     --email {{ lego_http_mail }} \
     --domains {{ lego_http_domain }} \
-    --server https://{{ lego_http_acme_server }} \
+    {% if lego_http_acme_server is defined %}--server {{ lego_http_acme_server }} {% endif %}\
     {{ lego_http_args }} \
     renew 2>&1
 )"
