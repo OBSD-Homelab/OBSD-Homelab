@@ -1,0 +1,12 @@
+---
+- name: create ypldap config
+  ansible.builtin.template:
+    src: ypldap.conf.j2
+    dest: /etc/ypldap.conf
+    owner: root
+    group: wheel
+    mode: '0600'
+
+- name: restart ypldap
+  ansible.builtin.command:
+    cmd: rcctl -f restart ypldap

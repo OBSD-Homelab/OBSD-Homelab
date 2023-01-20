@@ -1,0 +1,8 @@
+---
+yp_interval: 60
+
+yp_local: true
+
+yp_domain: '{{ domain }}'
+yp_ldap_base: '{{ openldap_base }}'
+yp_ldaps: true

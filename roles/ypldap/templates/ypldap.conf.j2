@@ -1,0 +1,50 @@
+# $OpenBSD: ypldap.conf,v 1.1 2014/07/11 21:20:10 deraadt Exp $
+#
+# {{ ansible_managed }}
+#
+
+domain		"{{ yp_domain }}"
+interval	{{ yp_interval }}
+provide map	"passwd.byname"
+provide map	"passwd.byuid"
+provide map	"group.byname"
+provide map	"group.bygid"
+provide map	"netid.byname"
+
+{% if yp_local %}
+bind		local
+{% endif %}
+
+{% if yp_ldaps %}
+{% if yp_cafile is defined %}
+cafile		"{{ yp_cafile }}"
+{% endif %}
+directory "{{ yp_ldap_server }}" ldaps {
+{% else %}
+directory "{{ yp_ldap_server }}" {
+{% endif %}
+	binddn "uid=ypldap,ou=InternalReaders,{{ yp_ldap_base }}"
+	bindcred "{{ yp_ldap_pass }}"
+	basedn "ou=Users,{{ yp_ldap_base }}"
+	groupdn "ou=Groups,{{ yp_ldap_base }}"
+
+	passwd filter "(&(objectClass=bsdUser)(systemUser=TRUE))"
+
+	attribute name maps to "bsdUID"
+	fixed attribute passwd "*"
+	attribute uid maps to "uidNumber"
+	attribute gid maps to "gidNumber"
+	attribute gecos maps to "gecos"
+	attribute home maps to "homeDirectory"
+	attribute shell maps to "loginShell"
+	fixed attribute change "0"
+	fixed attribute expire "0"
+	fixed attribute class "{{ yp_default_class | default('default')}}"
+
+	group filter "(&(objectClass=bsdGroup)(systemGroup=TRUE))"
+
+	attribute groupname maps to "bsdGID"
+	fixed attribute grouppasswd "*"
+	attribute groupgid maps to "gidNumber"
+	list groupmembers maps to "bsdUID"
+}
