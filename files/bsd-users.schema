@@ -1,0 +1,99 @@
+# OID assigned by IANA for BSD HomeLab Project is 58574:
+# http://www.iana.org/assignments/enterprise-numbers
+#
+# 1.3.6.1.4.1.58574            BSD HomeLab OID
+# 1.3.6.1.4.1.58574.100        BSD HomeLab
+# 1.3.6.1.4.1.58574.100.1      attributetypes
+# 1.3.6.1.4.1.58574.100.2      objectClasses
+
+#### attribute types
+
+attributetype ( 1.3.6.1.4.1.58574.100.1.1 NAME 'bsdUID'
+    DESC 'username for a BSD user'
+    EQUALITY caseIgnoreMatch
+    SUBSTR caseIgnoreSubstringsMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+
+attributetype ( 1.3.6.1.4.1.58574.100.1.2 NAME 'bsdGID'
+    DESC 'group name for a BSD group'
+    EQUALITY caseIgnoreMatch
+    SUBSTR caseIgnoreSubstringsMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+
+attributetype ( 1.3.6.1.4.1.58574.100.1.3 NAME 'bsdCID'
+    DESC 'class name for a BSD class'
+    EQUALITY caseIgnoreMatch
+    SUBSTR caseIgnoreSubstringsMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+
+attributetype ( 1.3.6.1.4.1.58574.100.1.4 NAME 'sshPublicKey'
+    DESC 'OpenSSH public key'
+    EQUALITY caseExactIA5Match
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+attributetype ( 1.3.6.1.4.1.58574.100.1.5 NAME 'secondaryGIDNumber'
+    DESC 'secondary group of a BSD user'
+    EQUALITY integerMatch
+    ORDERING integerOrderingMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 )
+
+attributetype ( 1.3.6.1.4.1.58574.100.1.6 NAME 'systemUser'
+    DESC 'Allocate a system user for given bsdUser'
+    EQUALITY booleanMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.7 )
+
+attributetype ( 1.3.6.1.4.1.58574.100.1.7 NAME 'systemGroup'
+    DESC 'Allocate a system user for given bsdUser'
+    EQUALITY booleanMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.7 )
+
+#### object classes
+
+objectclass ( 1.3.6.1.4.1.58574.100.2.1
+    NAME 'bsdUser'
+    DESC 'abstraction of a BSD User'
+    SUP ( top )
+    STRUCTURAL
+    MUST ( bsdUID )
+    MAY ( uidNumber $ gidNumber $ gecos $ homeDirectory $ loginShell $
+          bsdCID $ userPassword $ cn $ gn $ givenName $ sn $
+	  secondaryGIDNumber $ mail $ sshPublicKey $ systemUser ))
+
+objectclass ( 1.3.6.1.4.1.58574.100.2.2
+    NAME 'bsdGroup'
+    DESC 'abstraction of a BSD group'
+    SUP ( top )
+    STRUCTURAL
+    MUST ( bsdGID )
+    MAY ( gidNumber $ memberURL $ bsdUID $ systemGroup ))
+
+objectclass ( 1.3.6.1.4.1.58574.100.2.3
+    NAME 'bsdReader'
+    DESC 'internal service user for traversing the tree'
+    SUP ( top )
+    STRUCTURAL
+    MUST ( uid )
+    MAY ( userPassword ))
+
+objectclass ( 1.3.6.1.4.1.58574.100.2.4
+    NAME 'bsdPolicy'
+    DESC 'policy enforced for BSD users'
+    SUP ( top )
+    STRUCTURAL
+    MUST ( uid ))
+
+objectclass ( 1.3.6.1.4.1.58574.100.2.5
+    NAME 'bsdExternalUser'
+    DESC 'abstraction of an external user'
+    SUP ( top )
+    STRUCTURAL
+    MUST ( bsdUID $ mail )
+    MAY ( userPassword $ cn $ gn $ givenName $ sn))
+
+objectclass ( 1.3.6.1.4.1.58574.100.2.6
+    NAME 'bsdExternalGroup'
+    DESC 'abstraction of an external group'
+    SUP ( top )
+    STRUCTURAL
+    MUST ( bsdGID )
+    MAY ( memberURL $ bsdUID ))
