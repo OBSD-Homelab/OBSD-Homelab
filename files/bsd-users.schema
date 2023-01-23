@@ -81,19 +81,3 @@ objectclass ( 1.3.6.1.4.1.58574.100.2.4
     SUP ( top )
     STRUCTURAL
     MUST ( uid ))
-
-objectclass ( 1.3.6.1.4.1.58574.100.2.5
-    NAME 'bsdExternalUser'
-    DESC 'abstraction of an external user'
-    SUP ( top )
-    STRUCTURAL
-    MUST ( bsdUID $ mail )
-    MAY ( userPassword $ cn $ gn $ givenName $ sn))
-
-objectclass ( 1.3.6.1.4.1.58574.100.2.6
-    NAME 'bsdExternalGroup'
-    DESC 'abstraction of an external group'
-    SUP ( top )
-    STRUCTURAL
-    MUST ( bsdGID )
-    MAY ( memberURL $ bsdUID ))
