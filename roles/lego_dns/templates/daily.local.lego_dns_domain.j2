@@ -1,4 +1,4 @@
-next_part "Updating lego certificates for {{ lego_dns_domain }}"
+next_part "Updating lego certificates for {{ lego_dns_domain }} with lego_dns"
 
 lego_out=$(su -s /bin/ksh _lego -c "env $(cat /etc/lego/homelab_dns_{{ lego_dns_domain }}.env | xargs) \
     /usr/local/bin/lego --accept-tos \

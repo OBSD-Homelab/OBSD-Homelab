@@ -1,4 +1,4 @@
-next_part "Updating lego certificates for {{ lego_http_domain }}"
+next_part "Updating lego certificates for {{ lego_http_domain }} with lego_http"
 
 lego_out="$(env $(cat /etc/lego/homelab_{{ lego_http_domain }}.env | xargs) \
     /usr/local/bin/lego --accept-tos \
