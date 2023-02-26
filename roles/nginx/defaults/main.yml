@@ -1,9 +1,15 @@
 ---
 nginx_packages:
   - nginx
+  - nginx-stream
   - cyrus-sasl--ldap
   - py3-ldap
   - git
+
+nginx_worker_count: 1
+
+nginx_modules:
+  - 'modules/ngx_stream_module.so'
 
 nginx_ldap_auth_version: 'ca5f4136bbce67a227ac41155188af248d75fe05'
 nginx_ldap_daemon_host: 127.0.0.1
@@ -12,3 +18,6 @@ nginx_ldap_host: 'ldap://127.0.0.1'
 # nginx_ldap_base: 'dc=example,dc=com'
 # nginx_ldap_user: 'cn=nginx,ou=Users,dc=example,dc=com'
 # nginx_ldap_pass: 'coolPassword'
+
+nginx_frontend_only: false
+nginx_tcp_map: {}

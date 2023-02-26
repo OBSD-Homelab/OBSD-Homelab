@@ -6,12 +6,12 @@
 
 - name: set up /var/www/ directories
   ansible.builtin.file:
-    path: "/var/www/{{ item }}"
+    path: '/var/www/{{ item }}'
     state: directory
     mode: '0755'
     owner: root
     group: wheel
-  with_items: ["acme/.well-known", "var", "var/run"]
+  with_items: ['acme/.well-known', 'var', 'var/run']
 
 - name: create /var/www/var/www -> /var/www symlink
   ansible.builtin.file:
@@ -33,20 +33,20 @@
 
 - name: create nginx directories
   ansible.builtin.file:
-    path: "/etc/nginx/{{ item }}"
+    path: '/etc/nginx/{{ item }}'
     state: directory
     owner: root
     group: wheel
-    mode: '0755'
-  with_items: ["configs", "sites-available", "sites-enabled"]
+    mode: '0750'
+  with_items: ['configs', 'sites-available', 'sites-enabled', 'streams-available', 'streams-enabled']
 
 - name: copy nginx config
-  ansible.builtin.copy:
-    src: nginx.conf
+  ansible.builtin.template:
+    src: nginx.conf.j2
     dest: /etc/nginx/nginx.conf
     owner: root
     group: wheel
-    mode: '0644'
+    mode: '0640'
   notify: restart nginx
 
 - name: copy nginx sub-configs
@@ -55,47 +55,8 @@
     dest: /etc/nginx/configs/
     owner: root
     group: wheel
-    mode: '0644'
-  notify: restart nginx
-
-- name: create auth-proxy config
-  ansible.builtin.template:
-    src: auth-proxy.conf.j2
-    dest: /etc/nginx/configs/auth-proxy.conf
-    owner: root
-    group: wheel
     mode: '0640'
   notify: restart nginx
-
-- name: setup nginx-ldap-auth
-  ansible.builtin.git:
-    repo: https://github.com/Excision-Mail/nginx-ldap-auth
-    dest: '/usr/local/libexec/nginx-ldap-auth'
-    version: '{{ nginx_ldap_auth_version }}'
-
-- name: create nginx-ldap-auth launcher
-  ansible.builtin.template:
-    src: nginx_ldap_auth-launcher.j2
-    dest: /usr/local/libexec/nginx_ldap_auth-launcher
-    owner: root
-    group: wheel
-    mode: '0755'
-
-- name: create nginx-ldap-auth service
-  ansible.builtin.template:
-    src: nginx_ldap_auth.j2
-    dest: /etc/rc.d/nginx_ldap_auth
-    mode: '0755'
-    owner: root
-    group: wheel
-  notify: restart nginx-ldap-auth service
-
-- name: enable nginx-ldap-auth service
-  ansible.builtin.service:
-    name: nginx_ldap_auth
-    args: '-p {{nginx_ldap_daemon_port}}'
-    state: started
-    enabled: true
 
 - name: start and enable nginx
   service:

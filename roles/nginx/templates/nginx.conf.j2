@@ -1,0 +1,38 @@
+worker_processes        {{ nginx_worker_count }};
+worker_rlimit_nofile    1024;
+
+{% for module in nginx_modules %}
+load_module             "{{ module }}";
+{% endfor %}
+
+error_log               logs/error.log;
+
+events {
+    worker_connections  800;
+}
+
+http {
+    include             mime.types;
+    include             configs/ssl.conf;
+    default_type        application/octet-stream;
+    charset             utf-8;
+    index               index.php index.htm index.html;
+
+    tcp_nopush          on;
+    tcp_nodelay         on;
+
+    keepalive_timeout   65;
+
+    server_tokens       off;
+
+    proxy_cache_path    cache/  keys_zone=auth_cache:10m;
+
+    include             sites-enabled/*.conf;
+}
+
+stream {
+    include             configs/ssl.conf;
+    tcp_nodelay         on;
+
+    include             streams-enabled/*.conf;
+}
