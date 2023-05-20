@@ -1,11 +1,11 @@
 ---
 - name: install postgresql packages
-  package:
+  ansible.builtin.package:
     name: "{{ psql_packages }}"
     state: present
 
 - name: set up postgresql directories
-  file:
+  ansible.builtin.file:
     path: '{{ item.path }}'
     state: directory
     mode: '{{ item.mode }}'
@@ -14,19 +14,19 @@
   with_items: '{{ psql_directories }}'
 
 - name: enable postgresql service
-  service:
+  ansible.builtin.service:
     name: postgresql
     enabled: true
 
 - name: initialize postgresql
-  command: initdb -D /var/postgresql/data -U postgres -E UTF8 -A peer
+  ansible.builtin.command: initdb -D /var/postgresql/data -U postgres -E UTF8 -A peer
   args:
     creates: /var/postgresql/data/PG_VERSION
   become: true
   become_user: _postgresql
 
 - name: generate configuration
-  template:
+  ansible.builtin.template:
     src: postgresql.conf.j2
     dest: /var/postgresql/data/postgresql.conf
     owner: _postgresql
@@ -35,7 +35,7 @@
   notify: restart postgresql
 
 - name: generate user configurations
-  copy:
+  ansible.builtin.copy:
     src: '{{ item }}'
     dest: /var/postgresql/data/{{ item }}
     owner: _postgresql
@@ -47,7 +47,7 @@
   notify: restart postgresql
 
 - name: ensure sysctl.conf exists
-  file:
+  ansible.builtin.file:
     path: /etc/sysctl.conf
     state: touch
     owner: root
@@ -57,7 +57,7 @@
     access_time: preserve
 
 - name: Ensure semmni for busy servers
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/sysctl.conf
     regexp: "^kern.seminfo.semmni"
     line: "kern.seminfo.semmni={{ psql_semmni }}"
@@ -67,7 +67,7 @@
   register: _psql_semmni
 
 - name: Ensure semmns for busy servers
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/sysctl.conf
     regexp: "^kern.seminfo.semmns"
     line: "kern.seminfo.semmns={{ psql_semmns }}"
@@ -77,10 +77,18 @@
   register: _psql_semmns
 
 - name: ensure postgresql is started
-  service:
+  ansible.builtin.service:
     name: postgresql
     state: started
   when: not ( _psql_semmns.changed and _psql_semmni.changed )
+
+- name: create daily.local.d for postgresql dump
+  ansible.builtin.file:
+    src: 001_postgresql_dump
+    dest: /etc/daily.local.d/001_postgresql_dump
+    owner: root
+    group: wheel
+    mode: 0640
 
 - name: flush_handlers
   meta: flush_handlers
