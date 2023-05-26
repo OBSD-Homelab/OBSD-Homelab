@@ -2,4 +2,10 @@
 cw_packages:
   - libxslt
   - libxml
+  - py3-cryptography
+  - py3-ldap
   - py3-virtualenv
+  - calibre
+
+cw_ldap_filter_group_object: '(&(objectClass=bsdGroup)(bsdGID=%s))'
+cw_ldap_filter_user_object: '(&(objectClass=bsdUser)(bsdUID=%s))'

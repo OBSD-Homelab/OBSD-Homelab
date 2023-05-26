@@ -1,73 +1,87 @@
 ---
-- name: install calibre-web packages
-  package:
+- name: Install calibre-web packages
+  ansible.builtin.package:
     name: '{{ cw_packages }}'
     state: present
 
-- name: create calibre-web group
-  group:
-    name: _calibre
-
-- name: create calibre-web user
-  user:
-    name: _calibre
-    group: _calibre
-    comment: Calibre Web user
-    groups: ''
-    home: /var/calibre
-    login_class: daemon
-    shell: /sbin/nologin
-    password_lock: true
-    password: '*************'
-
-- name: remove calibre-web .ssh directory
-  file:
-    state: absent
-    path: /var/calibre/.ssh
-
-- name: create calibre-web virtualenv directory
-  file:
+- name: Create calibre-web directories
+  ansible.builtin.file:
     state: directory
-    path: /var/calibre/cw_virtualenv
-    owner: _homelab
-    group: _homelab
+    path: '{{ item }}'
+    owner: _calibre-web
+    group: _calibre-web
     mode: '0755'
+  with_items:
+    - '/var/calibre/'
+    - '/var/calibre/calibre-web'
+    - '/var/calibre/.config'
 
-- name: install calibre-web in virtualenv
-  pip:
-    virtualenv: /var/calibre/cw_virtualenv
+- name: Create calibre-web-runner directories
+  ansible.builtin.file:
+    state: directory
+    path: '{{ item }}'
+    owner: _calibre-web-runner
+    group: _calibre-web-runner
+    mode: '0750'
+  with_items:
+    - /var/calibre/books
+    - /var/calibre/.calibre-web
+    - /var/calibre/.config/calibre
+
+- name: Install calibre-web in virtualenv
+  ansible.builtin.pip:
+    virtualenv: /var/calibre/calibre-web
+    virtualenv_site_packages: true
     name: 'calibreweb[ldap]'
   environment:
     CPPFLAGS: '-I/usr/local/include'
     LDFLAGS: '-L/usr/local/lib'
-    HOME: /var/calibre/cw_virtualenv
+    HOME: /var/calibre/calibre-web
   become: true
-  become_user: _homelab
+  become_user: _calibre-web
 
-- name: install calibre-web launcher
-  copy:
+- name: Install calibre-web launcher
+  ansible.builtin.copy:
     src: calibre_web-launcher
     dest: /usr/local/libexec/calibre_web-launcher
     owner: root
     group: wheel
     mode: '0755'
 
-- name: create calibre-web rc script
-  template:
+- name: Create calibre-web rc script
+  ansible.builtin.template:
     src: calibre_web.j2
     dest: /etc/rc.d/calibre_web
     owner: root
     group: wheel
     mode: '0755'
 
-#- name: enable calibre-web service
-#  service:
-#    name: calibre_web
-#    enabled: true
-#    state: started
+- name: Enable and start calibre-web service
+  ansible.builtin.service:
+    name: calibre_web
+    enabled: true
+    state: started
 
-- name: set config options in calibre-web sqlite db
-  command: >
+- name: Ensure /var/calibre/books has a calibre database
+  ansible.builtin.command:
+    cmd: /usr/local/bin/calibredb --with-library /var/calibre/books list
+    creates: /var/calibre/books/metadata.db
+  become: true
+  become_user: _calibre-web-runner
+
+- name: Update admin user  # noqa no-changed-when
+  ansible.builtin.command: >
+    sqlite3 /var/calibre/.calibre-web/app.db
+    'UPDATE user SET
+     name = "{{ cw_admin }}",
+     email = "{{ cw_admin_mail }}",
+     password = NULL
+     WHERE id = 1;'
+  become: true
+  become_user: _calibre-web-runner
+
+- name: Set config options in calibre-web sqlite db  # noqa no-changed-when
+  ansible.builtin.command: >
     sqlite3 /var/calibre/.calibre-web/app.db
     'UPDATE settings SET
     mail_server = "{{ cw_smtp_host }}",
@@ -83,12 +97,12 @@
     config_ldap_authentication = 2,
     config_ldap_serv_username = "{{ cw_ldap_user }}",
     config_ldap_serv_password = "{{ cw_ldap_pass | b64encode }}",
-    config_ldap_user_object = "mail=%s",
+    config_ldap_user_object = "{{ cw_ldap_filter_user_object }}",
     config_ldap_dn = "{{ cw_ldap_base }}",
     config_ldap_openldap = 1,
-    config_ldap_group_object_filter = "(&(objectClass=hlApplication)(hlAppName=%s))",
-    config_ldap_group_members_field = "member",
-    config_ldap_group_name = "calibre"
+    config_ldap_group_object_filter = "{{ cw_ldap_filter_group_object }}",
+    config_ldap_group_members_field = "bsdUID",
+    config_ldap_group_name = "homelab"
     WHERE id = 1;'
   become: true
-  become_user: _calibre
+  become_user: _calibre-web-runner

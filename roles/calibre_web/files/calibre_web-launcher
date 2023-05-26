@@ -2,5 +2,5 @@
 
 export HOME="/var/calibre"
 cd /var/calibre
-. ./cw_virtualenv/bin/activate
+. ./calibre-web/bin/activate
 exec cps
