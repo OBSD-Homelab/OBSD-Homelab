@@ -1,9 +1,9 @@
 ---
-- name: update man database
-  command: makewhatis
+- name: Update man database
+  ansible.builtin.command: makewhatis
 
-- name: create schema ldifs
-  shell: schema2ldif "/etc/openldap/schema/{{ item | basename }}" > /etc/openldap/schema2ldif/{{ item | basename | regex_replace('\.schema$', '.ldif') }}
+- name: Create schema ldifs  # noqa yaml[line-length]
+  ansible.builtin.shell: schema2ldif "/etc/openldap/schema/{{ item | basename }}" > /etc/openldap/schema2ldif/{{ item | basename | regex_replace('\.schema$', '.ldif') }}
   with_items: '{{ openldap_schemas }}'
   become: true
   become_user: '{{ openldap_user }}'
@@ -11,36 +11,36 @@
     - stop slapd server
     - remove current slapd.d config
 
-- name: stop slapd server
-  service:
+- name: Stop slapd server
+  ansible.builtin.service:
     name: slapd
     state: stopped
 
-- name: remove current slapd.d config
-  command: find /etc/slapd.d -mindepth 1 -delete
+- name: Remove current slapd.d config
+  ansible.builtin.command: find /etc/slapd.d -mindepth 1 -delete
   notify: load new slapd.d config
 
-- name: load new slapd.d config
-  command: slapadd -n0 -F /etc/slapd.d -l /etc/slapd.ldif
+- name: Load new slapd.d config
+  ansible.builtin.command: slapadd -n0 -F /etc/slapd.d -l /etc/slapd.ldif
   become: true
   become_user: '{{ openldap_user }}'
   notify:
     - start slapd server
     - find post create scripts
 
-- name: start slapd server
-  service:
+- name: Start slapd server
+  ansible.builtin.service:
     name: slapd
     state: started
 
-- name: find post create scripts
-  find:
+- name: Find post create scripts
+  ansible.builtin.find:
     path: /etc/openldap/post_startup/
     pattern: '*.ldif'
   register: _openldap_post_scripts
   changed_when: true
   notify: execute post create scripts
 
-- name: execute post create scripts
-  command: ldapmodify -Y EXTERNAL -Q -H 'ldapi://' -f '{{ item.path }}'
+- name: Execute post create scripts
+  ansible.builtin.command: ldapmodify -Y EXTERNAL -Q -H 'ldapi://' -f '{{ item.path }}'
   with_items: '{{ _openldap_post_scripts.files }}'
