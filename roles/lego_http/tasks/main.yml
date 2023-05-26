@@ -4,6 +4,14 @@
     name: '{{ lego_http_packages }}'
     state: present
 
+- name: Create lego directories
+  ansible.builtin.file:
+    path: '/etc/lego/'
+    state: directory
+    owner: _lego
+    group: _lego
+    mode: '0700'
+
 - name: Create lego environment
   ansible.builtin.template:
     src: homelab_domain.env.j2
@@ -48,3 +56,6 @@
     owner: root
     group: wheel
     mode: '0640'
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
