@@ -1,0 +1,4 @@
+gem "passenger"
+#gem "puma"
+gem "unicorn"
+#gem "xapian-ruby"

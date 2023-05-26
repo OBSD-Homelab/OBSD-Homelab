@@ -1,0 +1,24 @@
+default:
+  email_delivery:
+    delivery_method: :smtp
+    smtp_settings:
+      enable_starttls_auto: true
+      address: "{{ rm_smtp_host }}"
+      port: {{ rm_smtp_port }}
+      authentication: :plain
+      user_name: "{{ rm_smtp_user }}"
+      password: "{{ rm_smtp_pass }}"
+
+  database_cipher_key: "{{ rm_db_encrypt_key }}"
+
+  secret_token: "{{ rm_session_encrypt_key }}"
+
+  imagemagick_convert_command: "/usr/local/bin/convert"
+
+  gs_command: "/usr/local/bin/gs"
+
+  minimagick_font_path: "/usr/local/share/fonts/noto/NotoSerifCJK-VF.otf.ttc"
+
+production:
+
+development:

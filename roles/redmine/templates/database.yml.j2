@@ -1,0 +1,20 @@
+production:
+  adapter: {{ rm_db_adapter }}
+  database: {{ rm_db_prod }}
+  host: {{ rm_db_host }}
+  username: {{ rm_db_user }}
+  password: "{{ rm_db_pass }}"
+
+development:
+  adapter: {{ rm_db_adapter }}
+  database: {{ rm_db_dev }}
+  host: {{ rm_db_host }}
+  username: {{ rm_db_user }}
+  password: "{{ rm_db_pass }}"
+
+test:
+  adapter: {{ rm_db_adapter }}
+  database: {{ rm_db_test }}
+  host: {{ rm_db_host }}
+  username: {{ rm_db_user }}
+  password: "{{ rm_db_pass }}"

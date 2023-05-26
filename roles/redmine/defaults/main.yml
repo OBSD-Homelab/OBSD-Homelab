@@ -1,0 +1,60 @@
+---
+rm_version: 5.0.5
+rm_git_url: 'https://github.com/redmine/redmine'
+
+rm_user: _redmine
+rm_group: _redmine
+rm_home: /var/redmine
+rm_runner: _redmine-runner
+
+rm_ruby_version: 3.1
+rm_ruby_slug: "{{ rm_ruby_version | regex_replace('\\.', '') }}"
+
+rm_packages:
+  - 'ruby%{{ rm_ruby_version }}'
+  - mercurial
+  - subversion
+  - git
+  - py3-psycopg2
+  - xapian-omega
+  - ghostscript--no_x11
+  - imagemagick
+
+rm_bundle: '/usr/local/bin/bundle{{ rm_ruby_slug }}'
+rm_gem: '/usr/local/bin/gem{{ rm_ruby_slug }}'
+rm_ruby: '/usr/local/bin/ruby{{ rm_ruby_slug }}'
+rm_rake: 'rake{{ rm_ruby_slug }}'
+
+rm_port: 18346
+
+rm_lang: 'en'
+
+rm_rebuild: false
+
+rm_db_adapter: 'postgresql'
+rm_db_user: 'redmine'
+rm_db_host: 'localhost'
+rm_db_prod: 'redmined'
+rm_db_dev: 'redmine_devd'
+rm_db_test: 'redmine_testd'
+
+rm_databases:
+  - '{{ rm_db_prod }}'
+  - '{{ rm_db_dev }}'
+  - '{{ rm_db_test }}'
+
+rm_smtp_host: '{{ smtp_host }}'
+rm_smtp_user: '{{ smtp_user }}'
+rm_smtp_port: '{{ smtp_port }}'
+rm_smtp_pass: '{{ smtp_pass }}'
+rm_smtp_tls: '{{ smtp_tls }}'
+rm_smtp_starttls: '{{ smtp_starttls }}'
+
+rm_email_jobs: []
+#   - imap_host:
+#     imap_pass:
+#     imap_user:
+#     imap_watch_folder:
+#     imap_success_folder:
+#     imap_failure_folder:
+#     project:

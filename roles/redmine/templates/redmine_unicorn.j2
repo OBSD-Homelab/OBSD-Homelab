@@ -1,0 +1,22 @@
+#!/bin/ksh
+#
+# {{ ansible_managed }}
+#
+
+env="RAILS_ENV=production PATH={{ rm_bin_dir }}:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin GEM_HOME={{ rm_gem_dir }} HOME={{ rm_home }}"
+
+daemon="{{ rm_bin_dir }}/unicorn"
+daemon_flags="-l 0.0.0.0:{{ rm_port }} -l \[::\]:{{ rm_port }}"
+daemon_user="{{ rm_runner }}"
+
+. /etc/rc.d/rc.subr
+
+rc_start() {
+	${rcexec} "cd {{ rm_app_dir }} && env ${env} ${daemon} ${daemon_flags}"
+}
+
+pexp="ruby{{ rm_ruby_slug }}: unicorn master ${daemon_flags}"
+
+rc_bg=YES
+
+rc_cmd $1

@@ -1,0 +1,23 @@
+---
+rm_app_dir: '{{ rm_home }}/app'
+rm_gem_dir: '{{ rm_home }}/ruby/{{ rm_ruby_version }}'
+rm_bin_dir: '{{ rm_home }}/ruby/bin'
+
+rm_dirs:
+  - path: '{{ rm_home }}'
+  - path: '{{ rm_home }}/ruby'
+  - path: '{{ rm_app_dir }}'
+  - path: '{{ rm_gem_dir }}'
+  - path: '{{ rm_bin_dir }}'
+  - path: '{{ rm_app_dir }}/tmp'
+    recurse: true
+    mode: 'u=rwX,g=rwX,o=rX'
+  - path: '{{ rm_app_dir }}/files'
+    recurse: true
+    mode: 'u=rwX,g=rwX,o=rX'
+  - path: '{{ rm_app_dir }}/log'
+    recurse: true
+    mode: 'u=rwX,g=rwX,o=rX'
+  - path: '{{ rm_app_dir }}/public/plugin_assets'
+    recurse: true
+    mode: 'u=rwX,g=rwX,o=rX'

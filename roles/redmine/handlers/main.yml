@@ -1,0 +1,24 @@
+---
+- name: Migrate databases
+  ansible.builtin.command:
+    cmd: "env RAILS_ENV=production REDMINE_LANG={{ rm_lang }} GEM_HOME={{ rm_gem_dir }} {{ rm_bundle }} exec {{ rm_rake }} db:migrate"
+  args:
+    chdir: "{{ rm_app_dir }}"
+  become: true
+  become_user: "{{ rm_user }}"
+
+- name: Migrate plugins
+  ansible.builtin.command:
+    cmd: "env RAILS_ENV=production REDMINE_LANG={{ rm_lang }} GEM_HOME={{ rm_gem_dir }} {{ rm_bundle }} exec {{ rm_rake }} redmine:plugins:migrate"
+  args:
+    chdir: "{{ rm_app_dir }}"
+  become: true
+  become_user: "{{ rm_user }}"
+
+- name: Load default data
+  ansible.builtin.command:
+    cmd: "env RAILS_ENV=production REDMINE_LANG={{ rm_lang }} GEM_HOME={{ rm_gem_dir }} {{ rm_bundle }} exec {{ rm_rake }} redmine:load_default_data"
+  args:
+    chdir: "{{ rm_app_dir }}"
+  become: true
+  become_user: "{{ rm_user }}"

@@ -1,0 +1,173 @@
+---
+- name: Install dependencies
+  ansible.builtin.package:
+    name: '{{ rm_packages }}'
+    state: installed
+
+- name: Get redmine code
+  ansible.builtin.git:
+    repo: '{{ rm_git_url }}'
+    dest: '{{ rm_app_dir }}'
+    version: '{{ rm_version }}'
+  become: true
+  become_user: '{{ rm_user }}'
+  notify:
+    - Migrate database
+    - Migrate plugins
+    - Load default data
+  when: false
+
+- name: Create redmine directories
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    state: directory
+    mode: '{{ item.mode | default("u=rwX,g=rX") }}'
+    owner: '{{ item.user | default(rm_user) }}'
+    group: '{{ item.group | default(rm_user) }}'
+    recurse: '{{ item.recurse | default(false) }}'
+    modification_time: preserve
+    access_time: preserve
+  with_items: '{{ rm_dirs }}'
+
+- name: Create database config
+  ansible.builtin.template:
+    src: database.yml.j2
+    dest: '{{ rm_app_dir }}/config/database.yml'
+    mode: '0640'
+  become: true
+  become_user: '{{ rm_user }}'
+  notify:
+    - migrate database
+    - migrate plugins
+    - load default data
+
+- name: Create main config
+  ansible.builtin.template:
+    src: configuration.yml.j2
+    dest: '{{ rm_app_dir }}/config/configuration.yml'
+    mode: '0640'
+  become: true
+  become_user: '{{ rm_user }}'
+
+- name: Create local gemfile
+  ansible.builtin.copy:
+    src: Gemfile.local
+    dest: '{{ rm_app_dir }}/Gemfile.local'
+    mode: '0644'
+  become: true
+  become_user: '{{ rm_user }}'
+
+- name: Run bundler
+  community.general.bundler:
+    executable: '{{ rm_bundle }}'
+    gem_path: '{{ rm_home }}'
+    binstub_directory: '{{ rm_bin_dir }}'
+    chdir: '{{ rm_app_dir }}'
+    state: present
+    exclude_groups:
+      - development
+      - test
+  environment:
+    tar: 'gtar'
+  become: true
+  become_user: '{{ rm_user }}'
+  notify:
+    - Migrate database
+    - Migrate plugins
+    - Load default data
+
+- name: Create session storage keys  # noqa no-changed-when
+  ansible.builtin.command:
+    cmd: 'env RAILS_ENV=production GEM_HOME={{ rm_gem_dir }} {{ rm_bundle }} exec {{ rm_rake }} generate_secret_token'
+  args:
+    chdir: '{{ rm_app_dir }}'
+    creates: '{{ rm_app_dir }}/config/initializers/secret_token.rb'
+  become: true
+  become_user: '{{ rm_user }}'
+  notify:
+    - Migrate database
+    - Migrate plugins
+    - Load default data
+
+- name: Force rebuild databases
+  ansible.builtin.command:
+    cmd: '/usr/bin/env true'
+  changed_when: rm_rebuild
+  notify:
+    - migrate database
+    - migrate plugins
+    - load default data
+
+- name: Add email cron jobs  # noqa yaml[line-length]
+  ansible.builtin.cron:
+    name: 'redmine email fetch - {{ item.id }}'
+    job: 'cd {{ rm_app_dir }} && env RAILS_ENV=production REDMINE_LANG={{ rm_lang }} GEM_HOME={{ rm_gem_dir }} {{ rm_bundle }} exec {{ rm_rake }} redmine:email:receive_imap host={{ item.imap_host }} port={{ item.imap_port | default(993) }} username={{ item.imap_user }} password={{ item.imap_pass }} ssl=true unknown_user=create no_account_notice=1 folder={{ item.imap_watch_folder }} move_on_success={{ item.imap_success_folder }} move_on_failure={{ item.imap_failure_folder }} project={{ item.project }} no_permission_check=1 find_by_subject=1'
+    user: _redmine-runner
+    minute: "*/5"
+  with_items: '{{ rm_email_jobs }}'
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Decrypt DB  # noqa no-changed-when
+  ansible.builtin.command:
+    cmd: 'env RAILS_ENV=production GEM_HOME={{ rm_gem_dir }} {{ rm_bundle }} exec {{ rm_rake }} db:decrypt'
+  args:
+    chdir: '{{ rm_app_dir }}'
+  become: true
+  become_user: '{{ rm_user }}'
+
+- name: Delete auth source with ID 1
+  community.postgresql.postgresql_query:
+    db: '{{ rm_db_prod }}'
+    query: 'DELETE FROM auth_sources WHERE id = 1'
+    login_host: '{{ rm_db_host }}'
+    login_user: '{{ rm_db_user }}'
+    login_password: '{{ rm_db_pass }}'
+
+- name: Create LDAP auth source with ID 1
+  community.postgresql.postgresql_query:
+    db: '{{ rm_db_prod }}'
+    query: >
+      INSERT INTO auth_sources(id, type, name, host, port, account, account_password, base_dn,
+      attr_login, attr_firstname, attr_lastname, attr_mail, onthefly_register, tls, verify_peer)
+      VALUES(1, 'AuthSourceLdap', 'BSDHomeLab', '127.0.0.1', 389, '{{ rm_ldap_user }}', '{{ rm_ldap_pass }}',
+      '{{ rm_ldap_base }}', 'mail', 'givenName', 'sn', 'mail', 't', 'f', 'f')
+    login_host: '{{ rm_db_host }}'
+    login_user: '{{ rm_db_user }}'
+    login_password: '{{ rm_db_pass }}'
+
+- name: Update admin user to use LDAP
+  community.postgresql.postgresql_query:
+    db: '{{ rm_db_prod }}'
+    query: "UPDATE users SET login = '{{ rm_admin_mail }}', hashed_password = '', auth_source_id = 1 WHERE id = 1"
+    login_host: '{{ rm_db_host }}'
+    login_user: '{{ rm_db_user }}'
+    login_password: '{{ rm_db_pass }}'
+
+- name: Update admin user email
+  community.postgresql.postgresql_query:
+    db: '{{ rm_db_prod }}'
+    query: "UPDATE email_addresses SET address = '{{ rm_admin_mail }}' WHERE user_id = 1"
+    login_host: '{{ rm_db_host }}'
+    login_user: '{{ rm_db_user }}'
+    login_password: '{{ rm_db_pass }}'
+
+- name: Encrypt DB  # noqa no-changed-when
+  ansible.builtin.command:
+    cmd: 'env RAILS_ENV=production GEM_HOME={{ rm_gem_dir }} {{ rm_bundle }} exec {{ rm_rake }} db:decrypt'
+  args:
+    chdir: '{{ rm_app_dir }}'
+  become: true
+  become_user: '{{ rm_user }}'
+
+- name: Create rc scripts
+  ansible.builtin.template:
+    src: '{{ item }}.j2'
+    dest: '/etc/rc.d/{{ item }}'
+    owner: root
+    group: wheel
+    mode: '0755'
+  with_items:
+    - 'redmine_unicorn'
+    - 'redmine_puma'
