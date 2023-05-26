@@ -47,6 +47,12 @@ attributetype ( 1.3.6.1.4.1.58574.100.1.7 NAME 'systemGroup'
     EQUALITY booleanMatch
     SYNTAX 1.3.6.1.4.1.1466.115.121.1.7 )
 
+attributetype ( 1.3.6.1.4.1.58574.100.1.8 NAME 'allowedApplication'
+    DESC 'applications allowed for a user'
+    EQUALITY caseIgnoreMatch
+    SUBSTR caseIgnoreSubstringsMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+
 #### object classes
 
 objectclass ( 1.3.6.1.4.1.58574.100.2.1
@@ -57,7 +63,7 @@ objectclass ( 1.3.6.1.4.1.58574.100.2.1
     MUST ( bsdUID )
     MAY ( uidNumber $ gidNumber $ gecos $ homeDirectory $ loginShell $
           bsdCID $ userPassword $ cn $ gn $ givenName $ sn $
-	  secondaryGIDNumber $ mail $ sshPublicKey $ systemUser ))
+	  secondaryGIDNumber $ mail $ sshPublicKey $ systemUser $ allowedApplication ))
 
 objectclass ( 1.3.6.1.4.1.58574.100.2.2
     NAME 'bsdGroup'
@@ -65,7 +71,7 @@ objectclass ( 1.3.6.1.4.1.58574.100.2.2
     SUP ( top )
     STRUCTURAL
     MUST ( bsdGID )
-    MAY ( gidNumber $ memberURL $ bsdUID $ systemGroup ))
+    MAY ( gidNumber $ memberURL $ bsdUID $ systemGroup $ allowedApplication ))
 
 objectclass ( 1.3.6.1.4.1.58574.100.2.3
     NAME 'bsdReader'
