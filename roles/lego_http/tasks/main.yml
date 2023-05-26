@@ -1,4 +1,9 @@
 ---
+- name: install lego packages
+  package:
+    name: '{{ lego_http_packages }}'
+    state: present
+
 - name: create lego environment
   ansible.builtin.template:
     src: homelab_domain.env.j2
@@ -15,7 +20,7 @@
       --path /etc/lego
       --email {{ lego_http_mail }}
       --domains {{ lego_http_domain }}
-      {% if lego_server is defined %} --server {{ lego_http_acme_server }} {% endif %}
+      {% if lego_http_acme_server is defined %} --server {{ lego_http_acme_server }} {% endif %}
       {{ lego_http_args }}
       run
     creates: '/etc/lego/certificates/{{ lego_http_domain }}.crt'
