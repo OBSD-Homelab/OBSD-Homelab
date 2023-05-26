@@ -1,7 +1,7 @@
 ---
-#lego_http_mail:
-#lego_http_domain:
-#lego_http_acme_server:
+# lego_http_mail:
+# lego_http_domain:
+# lego_http_acme_server:
 
 lego_http_pubkey:
   path: '/etc/ssl/{{ lego_http_domain }}.crt'

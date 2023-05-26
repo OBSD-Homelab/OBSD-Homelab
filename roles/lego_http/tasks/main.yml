@@ -1,10 +1,10 @@
 ---
-- name: install lego packages
-  package:
+- name: Install lego packages
+  ansible.builtin.package:
     name: '{{ lego_http_packages }}'
     state: present
 
-- name: create lego environment
+- name: Create lego environment
   ansible.builtin.template:
     src: homelab_domain.env.j2
     dest: '/etc/lego/homelab_{{ lego_http_domain }}.env'
@@ -12,7 +12,7 @@
     owner: root
     group: wheel
 
-- name: create certificates using lego
+- name: Create certificates using lego
   ansible.builtin.command:
     cmd: |
       /usr/local/bin/lego --accept-tos
@@ -26,7 +26,7 @@
     creates: '/etc/lego/certificates/{{ lego_http_domain }}.crt'
   environment: '{{ lego_http_env_merged }}'
 
-- name: install certificates
+- name: Install certificates
   ansible.builtin.copy:
     src: '/etc/lego/certificates/{{ item.src }}'
     dest: '{{ item.key.path }}'
@@ -41,7 +41,7 @@
       src: '{{ lego_http_domain }}.crt'
   notify: restart services
 
-- name: install daily.local.lego_http_domain
+- name: Install daily.local.lego_http_domain
   ansible.builtin.template:
     src: daily.local.lego_http_domain.j2
     dest: '/etc/daily.local.d/lego_http_{{ lego_http_domain }}'
