@@ -24,3 +24,5 @@ psql_directories:
     user: _postgresql
     group: _postgresql
     mode: '0755'
+
+psql_allowed_ips: []

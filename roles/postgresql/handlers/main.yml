@@ -1,12 +1,12 @@
 ---
-- name: sysctl semmni
-  command: sysctl kern.seminfo.semmni={{ psql_semmni }}
+- name: sysctl semmni  # noqa name[casing]
+  ansible.builtin.command: sysctl kern.seminfo.semmni={{ psql_semmni }}
 
-- name: sysctl semmns
-  command: sysctl kern.seminfo.semmns={{ psql_semmns }}
+- name: sysctl semmns  # noqa name[casing]
+  ansible.builtin.command: sysctl kern.seminfo.semmns={{ psql_semmns }}
 
-- name: restart postgresql
-  service:
+- name: restart postgresql  # noqa name[casing]
+  ansible.builtin.service:
     name: postgresql
     enabled: true
     state: restarted

@@ -1,0 +1,6 @@
+next_part "Creating dump for postgresql tables"
+PG_DUMP_FILE=/var/postgresql/full.sqldump
+touch ${PG_DUMP_FILE}
+chmod 600 ${PG_DUMP_FILE}
+chown root:wheel ${PG_DUMP_FILE}
+/usr/local/bin/pg_dumpall -U postgres > ${PG_DUMP_FILE}

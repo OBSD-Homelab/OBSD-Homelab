@@ -93,3 +93,7 @@ host    all             all             ::1/128                 scram-sha-256
 local   replication     all                                     scram-sha-256
 host    replication     all             127.0.0.1/32            scram-sha-256
 host    replication     all             ::1/128                 scram-sha-256
+# custom IP address allocations
+{% for pgip in psql_allowed_ips %}
+host    all             all             {{ '%-18s' | format(pgip) }}      scram-sha-256
+{% endfor %}
