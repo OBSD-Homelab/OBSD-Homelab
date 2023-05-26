@@ -1,0 +1,108 @@
+#!/usr/local/bin/python3
+
+import argparse
+import getpass
+import logging
+import os
+import sys
+
+import ldap
+
+# config
+
+ldap_base = '{{ openldap_base }}'
+
+# program
+
+parser = argparse.ArgumentParser(
+    description='homelab user interface',
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('-d',
+                    type=str,
+                    default='ERROR',
+                    dest='debug_level',
+                    choices=['DEBUG', 'INFO', 'WARN', 'ERROR', 'CRIT'],
+                    help='debug output level')
+parser.add_argument('-c',
+                    type=str,
+                    default='',
+                    dest='change',
+                    help='LDAP attribute to change')
+parser.add_argument('-p',
+                    action='store_true',
+                    dest='passwd_change',
+                    help='change user password')
+parser.add_argument('-t',
+                    type=int,
+                    default=5,
+                    dest='timeout',
+                    help='LDAP timeout')
+parser.add_argument('-u',
+                    type=str,
+                    default=getpass.getuser(),
+                    dest='user',
+                    help='user target')
+
+args = parser.parse_args()
+
+levels = {
+    'DEBUG': logging.DEBUG,
+    'INFO': logging.INFO,
+    'WARN': logging.WARNING,
+    'ERROR': logging.ERROR,
+    'CRIT': logging.CRITICAL
+}
+
+logging.basicConfig(level=levels[args.debug_level],
+                    style='{',
+                    format='{asctime} {levelname: >10}: {message}')
+
+logging.debug('user = %s', args.user)
+
+# default LDAP connection
+logging.debug('initializing LDAP connection')
+l_conn = ldap.initialize('ldapi://')
+logging.debug('setting connection timeout')
+l_conn.network_timeout = args.timeout
+l_conn.timeout = args.timeout
+
+logging.debug('asking for current password for user')
+curpass = getpass.getpass('Current password:')
+
+logging.debug('binding to LDAP server')
+l_conn.simple_bind_s(f'bsdUID={args.user}', curpass)
+
+# find the user
+l_filter = f'(&(objectClass=bsdUser)(bsdUID={args.user}))'
+logging.debug('searching for user "%s" with filter "%s"', args.user, l_filter)
+l_results = l_conn.search_s(base=ldap_base, scope=ldap.SCOPE_SUBTREE, filterstr=l_filter)
+l_reslen = len(l_results)
+logging.debug('number of results found: %s', l_reslen)
+if l_reslen != 1:
+    raise RuntimeError(f'could not find user "{args.user}"')
+
+l_dn = l_results[0][0]
+logging.debug('DN for %s = %s', args.user, l_dn)
+
+if args.passwd_change:
+    logging.info('"passwd_change" is set to true, proceeding to change password for "%s"', args.user)
+    newpass = ''
+    for i in range(3):
+        newpass1 = getpass.getpass('New password:')
+        newpass2 = getpass.getpass('Re-enter password:')
+        if newpass1 and newpass1 == newpass2:
+            newpass = newpass1
+            break
+    else:
+        raise RuntimeError('re-tries exceeded')
+    l_conn.passwd_s(l_dn, curpass, newpass)
+    print(f'Password successfully changed for {args.user}')
+elif args.change:
+    logging.info('"change" is set to "%s", proceeding to change "%s" for "%s"', args.change, args.change, args.user)
+    newval = input('New attribute value:')
+    logging.info('new value for "%s" is "%s"', args.change, newval)
+    l_conn.modify_s(l_dn, [ldap.MOD_REPLACE, args.change, newval])
+    print(f'Attribute "{args.change}" successfully changed for {args.user}')
+else:
+    logging.info('no operation specified')
+    print(f'DN for {args.user} = {l_dn}')

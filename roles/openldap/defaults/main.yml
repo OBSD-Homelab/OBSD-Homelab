@@ -41,6 +41,7 @@ openldap_modules_default:
   - rwm.la
   - unique.la
   - accesslog.la
+  - ppolicy.la
 
 openldap_modules_extra: []
 
@@ -58,7 +59,7 @@ openldap_ldifs_default:
 openldap_ldifs_extra: []
 
 openldap_frontend_overlays_default:
-  - mail_bind.ldif.j2
+  - bsdUID_bind.ldif.j2
 
 openldap_frontend_overlays_extra: []
 
@@ -80,8 +81,12 @@ openldap_data_overlays_default:
   - overlay_accesslog.ldif.j2  # must be first
   - overlay_unique.ldif.j2
   - overlay_dynlist.ldif.j2
+  - overlay_ppolicy.ldif.j2
 
 openldap_data_overlays_extra: []
+
+openldap_managers_default: []
+openldap_managers_extra: []
 
 openldap_syncprov_enable: false
 openldap_server_ids: []

@@ -12,6 +12,14 @@
     group: wheel
     mode: '0755'
 
+- name: install l-user script
+  ansible.builtin.template:
+    src: 'l-user.j2'
+    dest: '/usr/local/bin/l-user'
+    owner: root
+    group: wheel
+    mode: '0755'
+
 - name: enable openldap service
   service:
     name: slapd
