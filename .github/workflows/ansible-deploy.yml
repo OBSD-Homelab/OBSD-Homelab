@@ -1,4 +1,4 @@
-name: ansible-openldap
+name: ansible-deploy
 
 on:
   workflow_dispatch:
