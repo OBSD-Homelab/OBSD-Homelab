@@ -3,3 +3,7 @@ enable_list:
 
 exclude_paths:
   - .github
+
+
+warn_list:
+  - 'name[casing]'
