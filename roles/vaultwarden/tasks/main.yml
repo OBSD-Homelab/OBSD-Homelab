@@ -4,18 +4,6 @@
     name: '{{ vw_packages }}'
     state: present
 
-- name: create postgresql user
-  postgresql_user:
-    name: vaultwarden
-    password: '{{ vw_db_pass }}'
-
-- name: create postgresql database
-  postgresql_db:
-    name: vaultwardend
-    owner: vaultwarden
-    encoding: UTF-8
-    template: template0
-
 - name: generate vaultwarden config
   template:
     src: env.j2

@@ -17,6 +17,8 @@ vw_smtp_from_name: '{{ smtp_from_name }}'
 vw_smtp_user: '{{ smtp_user }}'
 vw_smtp_pass: '{{ smtp_pass }}'
 
+vw_postgres_host: '%2f/tmp'
+
 ### mislabelled variable names by vaultwarden, can't do anything about it
 vw_smtp_ssl: '{{ smtp_starttls or smtp_tls | ternary("true", "false") }}'
 vw_smtp_ssl_explicit: '{{ smtp_tls | ternary("true", "false") }}'
