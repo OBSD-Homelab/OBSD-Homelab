@@ -12,7 +12,7 @@ daemon_user="{{ rm_runner }}"
 . /etc/rc.d/rc.subr
 
 rc_start() {
-	${rcexec} "cd {{ rm_app_dir }} && env ${env} ${daemon} ${daemon_flags}"
+	rc_exec "cd {{ rm_app_dir }} && env ${env} ${daemon} ${daemon_flags}"
 }
 
 pexp="ruby{{ rm_ruby_slug }}: puma [0-9].[0-9].[0-9] \(tcp://0.0.0.0:{{ rm_port }},tcp://\[::\]:{{ rm_port }}\) \[app\]"
