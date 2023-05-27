@@ -1,10 +1,10 @@
 ---
-- name: restart vaultwarden
-  service:
+- name: Restart vaultwarden
+  ansible.builtin.service:
     name: vaultwarden
     state: restarted
 
-- name: restart vaultwarden_ldap
-  service:
+- name: Restart vaultwarden_ldap
+  ansible.builtin.service:
     name: vaultwarden_ldap
     state: restarted
