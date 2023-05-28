@@ -171,3 +171,14 @@
   with_items:
     - 'redmine_unicorn'
     - 'redmine_puma'
+
+- name: create redmine_puma/unicorn login.conf files
+  ansible.builtin.template:
+    src: 'redmine.login.j2'
+    dest: '/etc/login.conf.d/{{ item }}'
+    mode: '0644'
+    owner: root
+    group: wheel
+  with_items:
+    - redmine_puma
+    - redmine_unicorn
