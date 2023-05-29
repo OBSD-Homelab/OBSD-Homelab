@@ -4,6 +4,14 @@
     name: '{{ rm_packages }}'
     state: installed
 
+- name: Create redmine home folder
+  ansible.builtin.file:
+    path: '{{ rm_home }}'
+    owner: '{{ rm_user }}'
+    group: '{{ rm_user }}'
+    mode: '0750'
+    state: directory
+
 - name: Get redmine code
   ansible.builtin.git:
     repo: '{{ rm_git_url }}'
@@ -15,9 +23,8 @@
     - Migrate databases
     - Migrate plugins
     - Load default data
-  when: false
 
-- name: Create redmine directories
+- name: Fix redmine directory permissions
   ansible.builtin.file:
     path: '{{ item.path }}'
     state: directory
@@ -37,9 +44,9 @@
   become: true
   become_user: '{{ rm_user }}'
   notify:
-    - migrate database
-    - migrate plugins
-    - load default data
+    - Migrate databases
+    - Migrate plugins
+    - Load default data
 
 - name: Create main config
   ansible.builtin.template:
